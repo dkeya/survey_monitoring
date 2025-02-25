@@ -5,6 +5,15 @@ import os
 import tempfile
 import shutil
 
+hide_streamlit_style = """
+    <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+    </style>
+"""
+
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # Step 1: Initialize tracker with CSV persistence
 file_path = "business_pipeline_tracker.csv"
 
