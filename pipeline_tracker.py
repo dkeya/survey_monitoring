@@ -5,6 +5,9 @@ import os
 import tempfile
 import shutil
 
+# Streamlit UI
+st.set_page_config(page_title="Business Prospects Tracker", page_icon="📊", layout="wide")
+
 hide_streamlit_style = """
     <style>
         #MainMenu {visibility: hidden;}
@@ -43,9 +46,6 @@ industry_categories = [
     "Technology", "Finance", "Healthcare", "Education", "Retail",
     "Manufacturing", "Agriculture", "Real Estate", "Government", "Other"
 ]
-
-# Streamlit UI
-st.set_page_config(page_title="Business Prospects Tracker", page_icon="📊", layout="wide")
 
 # --- SIDEBAR: LOGO AT THE TOP ---
 st.sidebar.image("logo.png", use_container_width=True)
