@@ -156,7 +156,7 @@ st.markdown(
     """
     <style>
         .fancy-title {
-            position: fixed;  /* Keeps the title at the top */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -169,21 +169,45 @@ st.markdown(
             border-radius: 8px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             z-index: 1000;
+            min-height: 60px; /* Prevents shrinking */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
         }
 
-        /* Adjust spacing for the rest of the content */
         .content-container {
-            margin-top: 60px; /* Default margin to push content down */
+            margin-top: 80px; /* Default spacing for desktop */
+            transition: margin-top 0.3s ease-in-out;
         }
 
-        /* Dynamic spacing adjustment for mobile */
+        /* Ensure marquee moves down when title expands */
+        .marquee-container {
+            position: fixed;
+            top: 80px; /* Default placement below title */
+            left: 0;
+            width: 100%;
+            background: rgba(0, 74, 173, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            z-index: 999;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+            transition: top 0.3s ease-in-out;
+        }
+
+        /* Dynamic adjustment for mobile */
         @media screen and (max-width: 768px) {
             .fancy-title {
-                padding: 20px 10px; /* Keeps a neat layout */
+                padding: 20px 10px;
+                min-height: 90px; /* Allows space for title to expand */
             }
-            
+
             .content-container {
-                margin-top: 90px; /* Pushes down the content if title takes two lines */
+                margin-top: 110px; /* Moves content down to match title */
+            }
+
+            .marquee-container {
+                top: 110px; /* Push marquee down if title wraps */
             }
         }
     </style>
