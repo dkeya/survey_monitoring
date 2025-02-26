@@ -1,46 +1,49 @@
 Prospect Name,Contact Person,Email,Phone,Opportunity Size (KES),Status,Stage,Industry,Follow-up Date,Notes,Priority
-JWS,Shreya,shreya@jwseagon.com,733581057,6135000,Open,Won,Finance,28/02/2025,Target to show case predictive models after the data migration project,Yes
-Minet Insurance Brokers,Joshua Kakai,Joshua.Kakai@minet.co.ke,726093555,0,Open,Contacted,Finance,03/03/2025,Prospect interested in Fraud and Loss Ratio predictive models. Company profile with services and various solutions was sent,Yes
-AGRA,,,,0,Open,Tender,Other,28/02/2025,Tender closing on 28th Feb,Yes
-ABSA Life Assurance,,,,0,Open,Tender,Finance,21/02/2025,,No
-APA Insurance Company,,,,0,Open,Contacted,Finance,,,No
-Britam Insurance Company,,,,0,Open,Tender,Finance,21/02/2025,,No
-Cannon Insurance (K) Limited,,,,0,Open,Contacted,Finance,20/02/2025,,Yes
-Capex Life Assurance Company,,,,0,Open,Lead Identified,Finance,,,No
-CIC Insurance Company,,,,0,Open,Contacted,Finance,,,No
-Corporate Insurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Equity Life Assurance,,,,0,Open,Lead Identified,Finance,,,No
-GA Insurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Geminia Insurance Company,,,,0,Open,Contacted,Finance,,,Yes
-ICEA Lion Insurance,,,,0,Open,Lead Identified,Finance,,,No
-Jubilee Insurance Company,,,,0,Open,Contacted,Finance,,,No
-Kenindia Assurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Kenya Orient Insurance,,,,0,Open,Tender,Finance,21/02/2025,,No
-Kuscco Mutual Assurance Limited,,,,0,Open,Lead Identified,Finance,,,No
-Liberty Life Assurance Company,,,,0,Open,Contacted,Finance,,,No
-Madison Insurance Company,,,,0,Open,Contacted,Finance,,,Yes
-Mayfair Insurance Company,,,,0,Open,Contacted,Finance,,,No
-MUA Insurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Occidental Insurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Old Mutual Insurance Company,,,,0,Open,Contacted,Finance,,,No
-Pacis Insurance Company,,,,0,Closed,Contacted,Finance,20/02/2025,,No
-Pioneer Assurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Prudential Life Assurance,,,,0,Open,Lead Identified,Finance,,,No
-Sanlam Insurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Star Discover Insurance,,,,0,Open,Contacted,Finance,,,No
-Takaful Insurance Of Africa,,,,0,Open,Contacted,Finance,,,No
-Tausi Assurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Heritage Insurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Kenyan Alliance Insurance,,,,0,Open,Lead Identified,Finance,,,No
-The Monarch Insurance,,,,0,Open,Lead Identified,Finance,,,No
-Trident Insurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Continental Reinsurance,,,,0,Open,Lead Identified,Finance,,,No
-East Africa Reinsurance,,,,0,Open,Lead Identified,Finance,,,No
-Ghana Reinsurance Company,,,,0,Open,Lead Identified,Finance,,,No
-Kenya Reinsurance Corporation,,,,0,Open,Lead Identified,Finance,21/02/2025,,No
-Waica Reinsurance Kenya Limited,,,,0,Open,Lead Identified,Finance,,,No
-Kisumu Specialist,,,,0,Open,Contacted,Healthcare,,,No
-IG Sacco,Kevin Ombuge,,,0,Open,Lead Identified,Technology,20/02/2025,Reached out to Isaac,Yes
-Naivas,Carol Gichuru,,,0,Open,Lead Identified,Retail,21/02/2025,Consider the possibility of fronting Erisna,Yes
-Agriseed,Robert Koech,,720829367,0,Open,Lead Identified,Agriculture,21/02/2025,immediate opportunity if the solution can be customized to address their reconciliation issues,Yes
-Anglican Development Services,yyy,dkeya@virtualanlytics.co.ke,0,100000,Open,Lead Identified,Healthcare,28/02/2025,jfdffk,No
+JWS,Shreya,shreya@jwseagon.com,0733581057,6135000.0,Open,Won,Finance,28/02/2025,Target to show case predictive models after the data migration project,Yes
+Minet Insurance Brokers,Joshua Kakai,Joshua.Kakai@minet.co.ke,0726093555,0.0,Open,Contacted,Finance,03/03/2025,Prospect interested in Fraud and Loss Ratio predictive models. Company profile with services and various solutions was sent,Yes
+AGRA,,,,0.0,Open,Tender,Other,28/02/2025,Tender closing on 28th Feb,Yes
+ABSA Life Assurance,,,,0.0,Open,Tender,Finance,21/02/2025,,No
+APA Insurance Company,,,,0.0,Open,Contacted,Finance,,,No
+Britam Insurance Company,,,,0.0,Open,Tender,Finance,21/02/2025,,No
+Cannon Insurance (K) Limited,,,,0.0,Open,Contacted,Finance,20/02/2025,,Yes
+Capex Life Assurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+CIC Insurance Company,,,,0.0,Open,Contacted,Finance,,,No
+Corporate Insurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Equity Life Assurance,,,,0.0,Open,Lead Identified,Finance,,,No
+GA Insurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Geminia Insurance Company,,,,0.0,Open,Contacted,Finance,,,Yes
+ICEA Lion Insurance,,,,0.0,Open,Lead Identified,Finance,,,No
+Jubilee Insurance Company,,,,0.0,Open,Contacted,Finance,,,No
+Kenindia Assurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Kenya Orient Insurance,,,,0.0,Open,Tender,Finance,21/02/2025,,No
+Kuscco Mutual Assurance Limited,,,,0.0,Open,Lead Identified,Finance,,,No
+Liberty Life Assurance Company,,,,0.0,Open,Contacted,Finance,,,No
+Madison Insurance Company,,,,0.0,Open,Contacted,Finance,,,Yes
+Mayfair Insurance Company,,,,0.0,Open,Contacted,Finance,,,No
+MUA Insurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Occidental Insurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Old Mutual Insurance Company,,,,0.0,Open,Contacted,Finance,,,No
+Pacis Insurance Company,,,,0.0,Closed,Contacted,Finance,20/02/2025,,No
+Pioneer Assurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Prudential Life Assurance,,,,0.0,Open,Lead Identified,Finance,,,No
+Sanlam Insurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Star Discover Insurance,,,,0.0,Open,Contacted,Finance,,,No
+Takaful Insurance Of Africa,,,,0.0,Open,Contacted,Finance,,,No
+Tausi Assurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Heritage Insurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Kenyan Alliance Insurance,,,,0.0,Open,Lead Identified,Finance,,,No
+The Monarch Insurance,,,,0.0,Open,Lead Identified,Finance,,,No
+Trident Insurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Continental Reinsurance,,,,0.0,Open,Lead Identified,Finance,,,No
+East Africa Reinsurance,,,,0.0,Open,Lead Identified,Finance,,,No
+Ghana Reinsurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
+Kenya Reinsurance Corporation,,,,0.0,Open,Lead Identified,Finance,21/02/2025,,No
+Waica Reinsurance Kenya Limited,,,,0.0,Open,Lead Identified,Finance,,,No
+Kisumu Specialist,,,,0.0,Open,Contacted,Healthcare,,,No
+IG Sacco,Kevin Ombuge,,,0.0,Open,Lead Identified,Technology,20/02/2025,Reached out to Isaac,Yes
+Naivas,Carol Gichuru,,,0.0,Open,Lead Identified,Retail,21/02/2025,Consider the possibility of fronting Erisna,Yes
+Agriseed,Robert Koech,,0720829367,0.0,Open,Lead Identified,Agriculture,21/02/2025,immediate opportunity if the solution can be customized to address their reconciliation issues,Yes
+Anglican Development Services,Odinga,,0,0.0,Open,Lead Identified,Other,28/02/2025,To discuss what we can offer in the NGO space,Yes
+Virtual Analytics,Keya,dkeya@virtualanlytics.co.ke,000,0.0,Open,Lead Identified,Technology,26/02/2025,testin,Yes
+test,test,test,test,1000000.0,Open,Lead Identified,Technology,26/02/2025,test,Yes
+test123,test,dkeya@virtualanlytics.co.ke,test,45000000.0,Open,Lead Identified,Healthcare,26/02/2025,nan,Yes
