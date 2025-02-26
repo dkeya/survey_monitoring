@@ -25,6 +25,61 @@ responsive_style = """
         }
     </style>
 """
+
+st.markdown(responsive_style, unsafe_allow_html=True)
+
+# Add Sidebar Responsiveness Styles
+sidebar_style = """
+    <style>
+        @media screen and (max-width: 768px) {
+            [data-testid="stSidebarContent"] {
+                display: block !important;  /* Ensure sidebar remains accessible */
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                width: 75vw !important; /* Adjust width for mobile */
+                height: 100vh !important; /* Full height */
+                background: white !important;
+                box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1); /* Add a soft shadow */
+                z-index: 1100;
+                overflow-y: auto;
+                transform: translateX(-100%); /* Initially hidden */
+                transition: transform 0.3s ease-in-out;
+            }
+
+            /* When sidebar is toggled, slide it in */
+            [data-testid="stSidebarContent"].active {
+                transform: translateX(0);
+            }
+
+            /* Add button to toggle sidebar on mobile */
+            .sidebar-toggle {
+                display: block !important;
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                background: #004aad;
+                color: white;
+                padding: 8px 12px;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+                z-index: 1200;
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        /* Hide toggle button on larger screens */
+        @media screen and (min-width: 769px) {
+            .sidebar-toggle {
+                display: none;
+            }
+        }
+    </style>
+"""
+
+st.markdown(sidebar_style, unsafe_allow_html=True)
+
 st.markdown(responsive_style, unsafe_allow_html=True)
 
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
@@ -88,19 +143,24 @@ st.sidebar.markdown(
 )
 
 st.sidebar.image("logo.png", use_container_width=True)
-
 st.sidebar.image("logo.png", use_container_width=True)
+
+# Add Sidebar Toggle Button for Mobile View
+st.sidebar.markdown(
+    '<div class="sidebar-toggle" onclick="document.querySelector(\'[data-testid=stSidebarContent]\').classList.toggle(\'active\');">☰ Menu</div>',
+    unsafe_allow_html=True
+)
 
 # --- HEADER & SUMMARY ---
 st.markdown(
     """
     <style>
         .fancy-title {
-            position: fixed;
+            position: fixed;  /* Keeps the title at the top */
             top: 0;
             left: 0;
             width: 100%;
-            background: linear-gradient(to right, #1F3C63, #004aad);  /* Darker corporate color gradient */
+            background: linear-gradient(to right, #1F3C63, #004aad);
             color: white;
             padding: 15px 10px;
             font-size: 28px;
@@ -110,8 +170,25 @@ st.markdown(
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             z-index: 1000;
         }
+
+        /* Adjust spacing for the rest of the content */
+        .content-container {
+            margin-top: 60px; /* Default margin to push content down */
+        }
+
+        /* Dynamic spacing adjustment for mobile */
+        @media screen and (max-width: 768px) {
+            .fancy-title {
+                padding: 20px 10px; /* Keeps a neat layout */
+            }
+            
+            .content-container {
+                margin-top: 90px; /* Pushes down the content if title takes two lines */
+            }
+        }
     </style>
     <div class="fancy-title">🎯 Business Prospects Pipeline Tracker</div>
+    <div class="content-container"></div>
     """,
     unsafe_allow_html=True
 )
