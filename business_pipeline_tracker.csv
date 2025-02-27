@@ -17,7 +17,7 @@ Jubilee Insurance Company,,,,0.0,Open,Contacted,Finance,,,No
 Kenindia Assurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
 Kenya Orient Insurance,,,,0.0,Open,Tender,Finance,21/02/2025,,No
 Kuscco Mutual Assurance Limited,,,,0.0,Open,Lead Identified,Finance,,,No
-Liberty Life Assurance Company,,,,0.0,Open,Contacted,Finance,,,No
+Liberty Life Assurance Company,nan,nan,nan,0.0,Open,Contacted,Finance,27/02/2025,nan,No
 Madison Insurance Company,,,,0.0,Open,Contacted,Finance,,,Yes
 Mayfair Insurance Company,,,,0.0,Open,Contacted,Finance,,,No
 MUA Insurance Company,,,,0.0,Open,Lead Identified,Finance,,,No
@@ -46,4 +46,6 @@ Agriseed,Robert Koech,,0720829367,0.0,Open,Lead Identified,Agriculture,21/02/202
 Anglican Development Services,Odinga,,0,0.0,Open,Lead Identified,Other,28/02/2025,To discuss what we can offer in the NGO space,Yes
 Virtual Analytics,Keya,dkeya@virtualanlytics.co.ke,000,0.0,Open,Lead Identified,Technology,26/02/2025,testin,Yes
 test,test,test,test,1000000.0,Open,Lead Identified,Technology,26/02/2025,test,Yes
-test123,test,dkeya@virtualanlytics.co.ke,test,45000000.0,Open,Lead Identified,Healthcare,26/02/2025,nan,Yes
+test123,test,dkeya@virtualanlytics.co.ke,test,45000000.0,Open,Lead Identified,Healthcare,26/02/2025,,Yes
+Virtual Analytics,David,dkeya@virtualanlytics.co.ke,0705008008,0.0,Open,Lead Identified,Technology,27/02/2025,Test,Yes
+Virtual Analytics,David,dkeya@virtualanlytics.co.ke,0705008008,0.0,Open,Lead Identified,Technology,27/02/2025,Test,Yes
