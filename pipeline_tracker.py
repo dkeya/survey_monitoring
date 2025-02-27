@@ -133,28 +133,38 @@ if st.sidebar.button("☰ Menu", key="menu_toggle", help="Expand/Collapse Sideba
 # Sidebar Content (scrolls normally)
 st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
-# ✅ Sidebar: Always Visible Menu Button
-st.markdown("""
+# ✅ Sidebar Content Wrapper (Ensures Scroll)
+st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
+
+# ✅ Sidebar Logo (Always Visible)
+st.sidebar.markdown(f"""
+    <div class="sidebar-logo">
+        {f'<img src="data:image/png;base64,{logo_base64}" style="max-width: 80%; margin-bottom: 10px;">' if logo_base64 else '<p>⚠️ Logo Not Found</p>'}
+    </div>
+""", unsafe_allow_html=True)
+
+# ✅ Only One Menu Button Inside Sidebar (Removes Duplicate)
+st.sidebar.markdown("""
     <button class="menu-button" onclick="toggleSidebar()">☰ Menu</button>
 """, unsafe_allow_html=True)
 
-# ✅ Sidebar Content Toggle Logic
+# ✅ Sidebar Toggle Logic
 if "menu_expanded" not in st.session_state:
     st.session_state["menu_expanded"] = True  # Default to expanded
 
-# ✅ Add JavaScript for Sidebar Toggle (Correctly Placed)
-st.markdown("""
+# ✅ JavaScript for Sidebar Collapse/Expand
+st.sidebar.markdown("""
     <script>
         function toggleSidebar() {
             var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var content = document.querySelector('.main-content');
+            var logo = document.querySelector('.sidebar-logo');
 
             if (sidebar.classList.contains('collapsed-sidebar')) {
                 sidebar.classList.remove('collapsed-sidebar');
-                content.classList.remove('collapsed');
+                logo.style.display = "block";
             } else {
                 sidebar.classList.add('collapsed-sidebar');
-                content.classList.add('collapsed');
+                logo.style.display = "none";
             }
         }
     </script>
@@ -163,20 +173,32 @@ st.markdown("""
 # Title & Marquee (Fixed with Proper Spacing)
 st.markdown("""
     <style>
-        .title-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(to right, #1F3C63, #004aad);
-            color: white;
-            padding: 15px;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            z-index: 1000;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-        }
+            .title-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(to right, #1F3C63, #004aad);
+        color: white;
+        padding: 15px;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        z-index: 999; /* Lower z-index so sidebar overlays it */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    [data-testid="stSidebar"] {
+        background-color: #f8f9fa;
+        box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
+        overflow-y: auto;
+        height: 100vh;
+        width: 300px;
+        transition: all 0.3s ease-in-out;
+        position: fixed;
+        left: 0;
+        z-index: 1001; /* Higher z-index to overlay title */
+    }
         .marquee-container {
             position: fixed;
             top: 85px; /* Increased spacing to move it below the title */
