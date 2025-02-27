@@ -247,7 +247,7 @@ st.markdown(
             .sidebar-toggle {
                 display: block !important;
                 position: fixed;
-                top: 140px;  /* Just below the marquee */
+                top: 125px;  /* Just below the marquee */
                 left: 15px;
                 background: #004aad;
                 color: white;
@@ -277,22 +277,23 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- Sidebar Toggle Button (Corrected Positioning) ---
+# --- Sidebar Toggle Button ---
 st.markdown(
     """
-    <div class="sidebar-toggle" onclick="document.querySelector('[data-testid=stSidebarContent]').classList.toggle('active');">
+    <div class="sidebar-toggle" onclick="toggleSidebar()">
         ☰ Menu
     </div>
-    """,
-    unsafe_allow_html=True
-)
 
-# --- JavaScript to Close Sidebar When Clicking Outside ---
-st.markdown(
-    """
     <script>
+        function toggleSidebar() {
+            let sidebar = document.querySelector('[data-testid="stSidebarContent"]');
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+        }
+
         document.addEventListener("click", function(event) {
-            let sidebar = document.querySelector('[data-testid=stSidebarContent]');
+            let sidebar = document.querySelector('[data-testid="stSidebarContent"]');
             let button = document.querySelector('.sidebar-toggle');
             
             if (sidebar && button) {
