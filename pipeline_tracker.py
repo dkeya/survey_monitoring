@@ -33,31 +33,31 @@ sidebar_style = """
     <style>
         @media screen and (max-width: 768px) {
             [data-testid="stSidebarContent"] {
-                display: block !important;  /* Ensure sidebar remains accessible */
+                display: block !important;
                 position: fixed !important;
                 top: 0;
                 left: 0;
-                width: 75vw !important; /* Adjust width for mobile */
-                height: 100vh !important; /* Full height */
+                width: 75vw !important;
+                height: 100vh !important;
                 background: white !important;
-                box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1); /* Add a soft shadow */
+                box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1);
                 z-index: 1100;
                 overflow-y: auto;
-                transform: translateX(-100%); /* Initially hidden */
+                transform: translateX(-100%);
                 transition: transform 0.3s ease-in-out;
             }
 
-            /* When sidebar is toggled, slide it in */
+            /* Ensure sidebar slides in when toggled */
             [data-testid="stSidebarContent"].active {
                 transform: translateX(0);
             }
 
-            /* Add button to toggle sidebar on mobile */
+            /* Sidebar Toggle Button */
             .sidebar-toggle {
                 display: block !important;
                 position: fixed;
-                top: 15px;  /* Increase space from top */
-                left: 15px; /* Ensure it does not overlap with content */
+                top: 15px;
+                left: 15px;
                 background: #004aad;
                 color: white;
                 padding: 10px 15px;
@@ -65,7 +65,7 @@ sidebar_style = """
                 font-size: 18px;
                 font-weight: bold;
                 cursor: pointer;
-                z-index: 2000; /* Ensure it stays above all elements */
+                z-index: 3000;  /* Ensure it's above all elements */
                 box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
             }
         }
@@ -81,8 +81,8 @@ sidebar_style = """
 
 st.markdown(sidebar_style, unsafe_allow_html=True)
 
-# Insert Sidebar Toggle Button
-st.sidebar.markdown(
+# Inject Sidebar Toggle Button at Main Level (NOT inside Sidebar)
+st.markdown(
     """
     <div class="sidebar-toggle" onclick="document.querySelector('[data-testid=stSidebarContent]').classList.toggle('active');">
         ☰ Menu
