@@ -156,12 +156,6 @@ st.sidebar.markdown(
 st.sidebar.image("logo.png", use_container_width=True)
 st.sidebar.image("logo.png", use_container_width=True)
 
-# Add Sidebar Toggle Button for Mobile View
-st.sidebar.markdown(
-    '<div class="sidebar-toggle" onclick="document.querySelector(\'[data-testid=stSidebarContent]\').classList.toggle(\'active\');">☰ Menu</div>',
-    unsafe_allow_html=True
-)
-
 # --- HEADER & SUMMARY ---
 st.markdown(
     """
@@ -269,11 +263,85 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# --- Sidebar Toggle Button (Moved Below Marquee) ---
 st.markdown(
     """
     <div class="sidebar-toggle" onclick="document.querySelector('[data-testid=stSidebarContent]').classList.toggle('active');">
         ☰ Menu
     </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# --- Sidebar Styles and Sliding Effect ---
+st.markdown(
+    """
+    <style>
+        @media screen and (max-width: 768px) {
+            [data-testid="stSidebarContent"] {
+                display: block !important;
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                width: 75vw !important;
+                height: 100vh !important;
+                background: white !important;
+                box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1);
+                z-index: 1100;
+                overflow-y: auto;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+
+            /* Sidebar slides in when button is clicked */
+            [data-testid="stSidebarContent"].active {
+                transform: translateX(0);
+            }
+
+            /* Sidebar Toggle Button */
+            .sidebar-toggle {
+                display: block !important;
+                position: fixed;
+                top: 110px; /* BELOW Marquee */
+                left: 15px;
+                background: #004aad;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 5px;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                z-index: 3000;  /* Ensure it's above all elements */
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        /* Hide toggle button on larger screens */
+        @media screen and (min-width: 769px) {
+            .sidebar-toggle {
+                display: none !important;
+            }
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# --- Ensure Sidebar Closes When Clicking Outside ---
+st.markdown(
+    """
+    <script>
+        document.addEventListener("click", function(event) {
+            let sidebar = document.querySelector('[data-testid=stSidebarContent]');
+            let button = document.querySelector('.sidebar-toggle');
+            
+            if (sidebar && button) {
+                if (!sidebar.contains(event.target) && !button.contains(event.target)) {
+                    sidebar.classList.remove('active'); // Close sidebar when clicking outside
+                }
+            }
+        });
+    </script>
     """,
     unsafe_allow_html=True
 )
