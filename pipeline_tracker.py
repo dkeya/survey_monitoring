@@ -269,6 +269,15 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown(
+    """
+    <div class="sidebar-toggle" onclick="document.querySelector('[data-testid=stSidebarContent]').classList.toggle('active');">
+        ☰ Menu
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 # --- KPIs Overview ---
 total_prospects = df.shape[0]
 open_deals = df[df["Status"] == "Open"].shape[0]
