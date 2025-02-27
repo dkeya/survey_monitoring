@@ -56,23 +56,24 @@ sidebar_style = """
             .sidebar-toggle {
                 display: block !important;
                 position: fixed;
-                top: 10px;
-                left: 10px;
+                top: 15px;  /* Increase space from top */
+                left: 15px; /* Ensure it does not overlap with content */
                 background: #004aad;
                 color: white;
-                padding: 8px 12px;
+                padding: 10px 15px;
                 border-radius: 5px;
-                font-size: 16px;
+                font-size: 18px;
+                font-weight: bold;
                 cursor: pointer;
-                z-index: 1200;
-                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+                z-index: 2000; /* Ensure it stays above all elements */
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
             }
         }
 
         /* Hide toggle button on larger screens */
         @media screen and (min-width: 769px) {
             .sidebar-toggle {
-                display: none;
+                display: none !important;
             }
         }
     </style>
@@ -80,9 +81,19 @@ sidebar_style = """
 
 st.markdown(sidebar_style, unsafe_allow_html=True)
 
-st.markdown(responsive_style, unsafe_allow_html=True)
+# Insert Sidebar Toggle Button
+st.sidebar.markdown(
+    """
+    <div class="sidebar-toggle" onclick="document.querySelector('[data-testid=stSidebarContent]').classList.toggle('active');">
+        ☰ Menu
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
+st.markdown(responsive_style, unsafe_allow_html=True)
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # Step 1: Initialize tracker with CSV persistence
 file_path = "business_pipeline_tracker.csv"
 
