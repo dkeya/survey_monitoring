@@ -48,15 +48,30 @@ logo_path = "logo.png"
 logo_base64 = get_base64_logo(logo_path)
 
 # Sidebar: Fixed Logo at the Top, Menu Scrolls Normally
-st.sidebar.markdown(f"""
+st.markdown("""
     <style>
-        [data-testid="stSidebar"] {{
+        /* Sidebar default styles */
+        [data-testid="stSidebar"] {
             background-color: #f8f9fa;
             box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
             overflow-y: auto;
             height: 100vh;
-        }}
-        .sidebar-logo {{
+            width: 300px;
+            transition: all 0.3s ease-in-out;
+            position: fixed;
+            left: 0;
+            z-index: 1000;
+        }
+
+        /* Collapsed Sidebar for Mobile */
+        .collapsed-sidebar {
+            width: 0;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        /* Sidebar Logo */
+        .sidebar-logo {
             position: fixed;
             top: 0;
             left: 0;
@@ -64,22 +79,43 @@ st.sidebar.markdown(f"""
             background-color: #f8f9fa;
             padding: 15px 0;
             text-align: center;
-            z-index: 1000;
+            z-index: 1001;
             border-bottom: 2px solid #ddd;
-        }}
-        .sidebar-logo img {{
-            width: 80%;
-            max-width: 200px;
-            margin-bottom: 5px;
-        }}
-        .sidebar-content {{
-            margin-top: 120px; /* Push content below the fixed logo */
-            padding: 10px;
-        }}
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Menu button always visible on mobile */
+        .menu-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #ff4b4b;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 1100;
+            display: block;
+        }
+
+        /* Hide menu button when sidebar is open */
+        .expanded .menu-button {
+            display: none;
+        }
+
+        /* Push content when sidebar is open */
+        .main-content {
+            margin-left: 300px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* Shrink content when sidebar is collapsed */
+        .collapsed .main-content {
+            margin-left: 0;
+        }
     </style>
-    <div class="sidebar-logo">
-        {f'<img src="data:image/png;base64,{logo_base64}" class="sidebar-logo">' if logo_base64 else '<p>⚠️ Logo Not Found</p>'}
-    </div>
 """, unsafe_allow_html=True)
 
 # Sidebar content (scrolls normally)
@@ -93,11 +129,36 @@ if "menu_expanded" not in st.session_state:
 if st.sidebar.button("☰ Menu", key="menu_toggle", help="Expand/Collapse Sidebar Sections"):
     st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
 
-# Sidebar Content Wrapper
+# Add JavaScript to toggle sidebar visibility on mobile
+# Sidebar Content (scrolls normally)
 st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
-# ✅ Move this closing tag to after all sidebar elements
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
+# ✅ Sidebar: Always Visible Menu Button
+st.markdown("""
+    <button class="menu-button" onclick="toggleSidebar()">☰ Menu</button>
+""", unsafe_allow_html=True)
+
+# ✅ Sidebar Content Toggle Logic
+if "menu_expanded" not in st.session_state:
+    st.session_state["menu_expanded"] = True  # Default to expanded
+
+# ✅ Add JavaScript for Sidebar Toggle (Correctly Placed)
+st.markdown("""
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            var content = document.querySelector('.main-content');
+
+            if (sidebar.classList.contains('collapsed-sidebar')) {
+                sidebar.classList.remove('collapsed-sidebar');
+                content.classList.remove('collapsed');
+            } else {
+                sidebar.classList.add('collapsed-sidebar');
+                content.classList.add('collapsed');
+            }
+        }
+    </script>
+""", unsafe_allow_html=True)
 
 # Title & Marquee (Fixed with Proper Spacing)
 st.markdown("""
