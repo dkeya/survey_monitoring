@@ -85,9 +85,16 @@ st.sidebar.markdown(f"""
 # Sidebar content (scrolls normally)
 st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
-# Menu button inside the scrollable sidebar
-if st.sidebar.button("☰ Menu", key="menu_toggle", help="Toggle sidebar menu"):
-    st.sidebar.empty()
+# Sidebar: Menu Toggle Logic
+if "menu_expanded" not in st.session_state:
+    st.session_state["menu_expanded"] = True  # Default to expanded
+
+# Menu button toggles state
+if st.sidebar.button("☰ Menu", key="menu_toggle", help="Expand/Collapse Sidebar Sections"):
+    st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
+
+# Sidebar Content Wrapper
+st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
 # ✅ Move this closing tag to after all sidebar elements
 st.sidebar.markdown('</div>', unsafe_allow_html=True)
@@ -150,7 +157,7 @@ col3.metric("🔒 Closed Deals", df[df["Status"] == "Closed"].shape[0])
 col4.metric("🚀 Priority Prospects", df[df["Priority"] == "Yes"].shape[0])
 
 # Sidebar: Add Business Prospect 
-with st.sidebar.expander("➕ Add New Prospect", expanded=False):
+with st.sidebar.expander("➕ Add New Prospect", expanded=st.session_state["menu_expanded"]):
     with st.form("add_prospect_form"):
         prospect_name = st.text_input("Prospect Name")
         contact_person = st.text_input("Contact Person")
@@ -198,7 +205,7 @@ if submit_button:
     st.rerun()
 
 # Sidebar: Modify Existing Prospect  
-with st.sidebar.expander("📝 Modify Existing Prospect", expanded=False):
+with st.sidebar.expander("📝 Modify Existing Prospect", expanded=st.session_state["menu_expanded"]):
     selected_prospect = st.selectbox("Select Prospect to Modify", ["None"] + list(df["Prospect Name"].unique()))
 
     if selected_prospect != "None":
@@ -248,14 +255,16 @@ with st.sidebar.expander("📝 Modify Existing Prospect", expanded=False):
             st.rerun()
 
 # Filter Section
-st.sidebar.subheader("🔍 Filter Prospects")
+if st.session_state["menu_expanded"]:
+    st.sidebar.subheader("🔍 Filter Prospects")
 selected_stage = st.sidebar.selectbox("Filter by Stage", ["All"] + list(df["Stage"].unique()))
 selected_status = st.sidebar.selectbox("Filter by Status", ["All", "Open", "Closed"])
 selected_industry = st.sidebar.selectbox("Filter by Industry", ["All"] + list(df["Industry"].unique()))
 min_opportunity = st.sidebar.slider("Min Opportunity Size (KES)", 0, 10000000, 0)
 
 # Sidebar: Download & Upload CSV
-st.sidebar.subheader("📥 Data Management")
+if st.session_state["menu_expanded"]:
+    st.sidebar.subheader("📥 Data Management")
 
 # Download CSV Button
 st.sidebar.download_button(
