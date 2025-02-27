@@ -174,7 +174,7 @@ st.markdown(
             border-radius: 8px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            min-height: 60px; /* Prevents shrinking */
+            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -182,14 +182,14 @@ st.markdown(
         }
 
         .content-container {
-            margin-top: 80px; /* Default spacing for desktop */
+            margin-top: 80px;
             transition: margin-top 0.3s ease-in-out;
         }
 
-        /* Ensure marquee moves down when title expands */
+        /* Marquee styling */
         .marquee-container {
             position: fixed;
-            top: 80px; /* Default placement below title */
+            top: 80px;
             left: 0;
             width: 100%;
             background: rgba(0, 74, 173, 0.1);
@@ -200,83 +200,29 @@ st.markdown(
             transition: top 0.3s ease-in-out;
         }
 
-        /* Dynamic adjustment for mobile */
-        @media screen and (max-width: 768px) {
-            .fancy-title {
-                padding: 20px 10px;
-                min-height: 90px; /* Allows space for title to expand */
-            }
-
-            .content-container {
-                margin-top: 110px; /* Moves content down to match title */
-            }
-
-            .marquee-container {
-                top: 110px; /* Push marquee down if title wraps */
-            }
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
         }
-    </style>
-    <div class="fancy-title">🎯 Business Prospects Pipeline Tracker</div>
-    <div class="content-container"></div>
-    """,
-    unsafe_allow_html=True
-)
 
-st.markdown(
-    """
-    <style>
-    @keyframes scroll {
-        0% { transform: translateX(100%); }
-        100% { transform: translateX(-100%); }
-    }
-    .marquee-container {
-        width: 100%;
-        position: fixed;  /* Fix the scrolling text */
-        top: 90px;  /* Increased spacing from the title */
-        left: 0;
-        background: rgba(0, 74, 173, 0.1);  /* Light version of corporate color */
-        border-radius: 5px;
-        padding: 10px;  /* Added padding for better spacing */
-        z-index: 999; /* Ensures it stays above other elements */
-        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    .marquee {
-        display: inline-block;
-        white-space: nowrap;
-        font-size: 17px;
-        font-style: italic;
-        font-weight: bold;
-        background: linear-gradient(90deg, #004aad, #00b4db); /* Gradient Text Effect */
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 1px 1px 10px rgba(0, 74, 173, 0.3); /* Soft glow effect */
-        animation: scroll 15s linear infinite;
-    }
-    .marquee:hover {
-        animation-play-state: paused;  /* Pause on Hover */
-    }
-    </style>
-    <div class="marquee-container">
-        <div class="marquee">   Track your business prospects with real-time analytics   |     Stay ahead with data-driven insights   |     Optimize your sales pipeline efficiently! 🔥✨ </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        .marquee {
+            display: inline-block;
+            white-space: nowrap;
+            font-size: 17px;
+            font-style: italic;
+            font-weight: bold;
+            background: linear-gradient(90deg, #004aad, #00b4db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px 10px rgba(0, 74, 173, 0.3);
+            animation: scroll 15s linear infinite;
+        }
 
-# --- Sidebar Toggle Button (Moved Below Marquee) ---
-st.markdown(
-    """
-    <div class="sidebar-toggle" onclick="document.querySelector('[data-testid=stSidebarContent]').classList.toggle('active');">
-        ☰ Menu
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        .marquee:hover {
+            animation-play-state: paused;
+        }
 
-# --- Sidebar Styles and Sliding Effect ---
-st.markdown(
-    """
-    <style>
+        /* Sidebar styles */
         @media screen and (max-width: 768px) {
             [data-testid="stSidebarContent"] {
                 display: block !important;
@@ -293,16 +239,15 @@ st.markdown(
                 transition: transform 0.3s ease-in-out;
             }
 
-            /* Sidebar slides in when button is clicked */
             [data-testid="stSidebarContent"].active {
                 transform: translateX(0);
             }
 
-            /* Sidebar Toggle Button */
+            /* Properly position ☰ Menu button below marquee */
             .sidebar-toggle {
                 display: block !important;
                 position: fixed;
-                top: 110px; /* BELOW Marquee */
+                top: 140px;  /* Just below the marquee */
                 left: 15px;
                 background: #004aad;
                 color: white;
@@ -311,7 +256,7 @@ st.markdown(
                 font-size: 18px;
                 font-weight: bold;
                 cursor: pointer;
-                z-index: 3000;  /* Ensure it's above all elements */
+                z-index: 3000;
                 box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
             }
         }
@@ -323,11 +268,26 @@ st.markdown(
             }
         }
     </style>
+    <div class="fancy-title">🎯 Business Prospects Pipeline Tracker</div>
+    <div class="content-container"></div>
+    <div class="marquee-container">
+        <div class="marquee">Track your business prospects with real-time analytics | Stay ahead with data-driven insights | Optimize your sales pipeline efficiently! 🔥✨</div>
+    </div>
     """,
     unsafe_allow_html=True
 )
 
-# --- Ensure Sidebar Closes When Clicking Outside ---
+# --- Sidebar Toggle Button (Corrected Positioning) ---
+st.markdown(
+    """
+    <div class="sidebar-toggle" onclick="document.querySelector('[data-testid=stSidebarContent]').classList.toggle('active');">
+        ☰ Menu
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# --- JavaScript to Close Sidebar When Clicking Outside ---
 st.markdown(
     """
     <script>
