@@ -121,17 +121,87 @@ st.markdown("""
 # Sidebar content (scrolls normally)
 st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
-# Sidebar: Menu Toggle Logic
-if "menu_expanded" not in st.session_state:
-    st.session_state["menu_expanded"] = True  # Default to expanded
+# Sidebar: Menu Toggle Logic (Ensures correct positioning & visibility)
+if "sidebar_collapsed" not in st.session_state:
+    st.session_state["sidebar_collapsed"] = False  # Default: Sidebar expanded on desktop
 
-# Menu button toggles state
-if st.sidebar.button("☰ Menu", key="sidebar_toggle", help="Expand/Collapse Sidebar Sections"):
-    st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
+menu_button_html = """
+    <style>
+        /* Ensure button is inside the sidebar on desktop */
+        .menu-button {
+            position: fixed;
+            top: 10px;
+            left: 15px;
+            background-color: #004aad;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 1200;
+            transition: all 0.3s ease-in-out;
+        }
 
-# Add JavaScript to toggle sidebar visibility on mobile
-# Sidebar Content (scrolls normally)
-st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
+        /* Move button to the main screen on mobile */
+        @media (max-width: 768px) {
+            .menu-button {
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 2000;
+            }
+        }
+
+        /* Sidebar Default */
+        [data-testid="stSidebar"] {
+            background-color: #f8f9fa;
+            box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            z-index: 1100;
+            width: 300px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Collapsed Sidebar */
+        .collapsed-sidebar {
+            width: 0px !important;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        /* Ensure Main Content Adjusts */
+        .main-content {
+            margin-left: 300px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .collapsed .main-content {
+            margin-left: 0px;
+        }
+    </style>
+
+    <button class="menu-button" onclick="toggleSidebar()">☰ Menu</button>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            var mainContent = document.querySelector('.main-content');
+
+            if (sidebar.classList.contains('collapsed-sidebar')) {
+                sidebar.classList.remove('collapsed-sidebar');
+                mainContent.classList.remove('collapsed');
+                sidebar.style.width = "300px";
+            } else {
+                sidebar.classList.add('collapsed-sidebar');
+                mainContent.classList.add('collapsed');
+                sidebar.style.width = "0px";
+            }
+        }
+    </script>
+"""
+
+st.markdown(menu_button_html, unsafe_allow_html=True)
 
 # ✅ Sidebar Content Wrapper (Ensures Scroll)
 st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
@@ -143,48 +213,74 @@ st.sidebar.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Sidebar: Menu Toggle Logic (Toggles Sidebar Width)
-if "sidebar_collapsed" not in st.session_state:
-    st.session_state["sidebar_collapsed"] = False  # Default: Sidebar expanded
+# Sidebar: Menu Toggle Logic (Ensures visibility on mobile)
+if "menu_expanded" not in st.session_state:
+    st.session_state["menu_expanded"] = True  # Default to expanded
 
-# Responsive Placement: Button is in the sidebar normally, but moves to the main screen on mobile
-menu_button = st.sidebar.button("☰ Menu", key="sidebar_width_toggle", help="Expand/Collapse Sidebar Width")
-
-if menu_button:
-    st.session_state["sidebar_collapsed"] = not st.session_state["sidebar_collapsed"]
-
-# ✅ Sidebar State Control for Responsive Width Adjustment
-st.markdown(f"""
+# ✅ Sidebar State Control for Responsiveness
+st.markdown("""
     <style>
-        /* Sidebar Default */
-        [data-testid="stSidebar"] {{
+        /* Sidebar Toggle Button */
+        .menu-toggle {
+            width: 100%;
+            background-color: #004aad;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .menu-toggle:hover {
+            background-color: #003580;
+        }
+
+        /* Sidebar Appearance */
+        [data-testid="stSidebar"] {
             transition: all 0.3s ease-in-out;
             background-color: #f8f9fa;
             box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
             height: 100vh;
+            width: 300px;
             position: fixed;
             left: 0;
             z-index: 1100;
-            width: {60 if st.session_state["sidebar_collapsed"] else 300}px;
-        }}
+        }
 
-        /* Main Content Adjusts When Sidebar Shrinks */
-        .main-content {{
-            margin-left: {60 if st.session_state["sidebar_collapsed"] else 300}px;
-            transition: margin-left 0.3s ease-in-out;
-        }}
+        /* Collapsed Sidebar */
+        .collapsed-sidebar {
+            transform: translateX(-310px);
+        }
 
-        /* Move Menu Button to Main Screen on Mobile */
-        @media (max-width: 768px) {{
-            [data-testid="stSidebar"] .stButton {{
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                z-index: 1200;
-                width: auto;
-            }}
-        }}
+        /* Expanded Sidebar */
+        .expanded-sidebar {
+            transform: translateX(0);
+        }
     </style>
+""", unsafe_allow_html=True)
+
+# ✅ JavaScript to Toggle Sidebar
+st.markdown("""
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            var menuButton = document.querySelector('.menu-toggle');
+
+            function toggleSidebar() {
+                if (sidebar.classList.contains('collapsed-sidebar')) {
+                    sidebar.classList.remove('collapsed-sidebar');
+                    sidebar.classList.add('expanded-sidebar');
+                } else {
+                    sidebar.classList.remove('expanded-sidebar');
+                    sidebar.classList.add('collapsed-sidebar');
+                }
+            }
+
+            menuButton.addEventListener("click", toggleSidebar);
+        });
+    </script>
 """, unsafe_allow_html=True)
 
 # ✅ Sidebar State Control for Responsive Width Adjustment
