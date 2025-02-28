@@ -285,7 +285,7 @@ col3.metric("🔒 Closed Deals", df[df["Status"] == "Closed"].shape[0])
 col4.metric("🚀 Priority Prospects", df[df["Priority"] == "Yes"].shape[0])
 
 # Sidebar: Add Business Prospect 
-with st.sidebar.expander("➕ Add New Prospect", expanded=st.session_state["menu_expanded"]):
+with st.sidebar.expander("➕ Add New Business Prospect", expanded=False):
     with st.form("add_prospect_form"):
         prospect_name = st.text_input("Prospect Name")
         contact_person = st.text_input("Contact Person")
@@ -333,7 +333,7 @@ if submit_button:
     st.rerun()
 
 # Sidebar: Modify Existing Prospect  
-with st.sidebar.expander("📝 Modify Existing Prospect", expanded=st.session_state["menu_expanded"]):
+with st.sidebar.expander("📝 Modify Existing Prospect", expanded=False):
     selected_prospect = st.selectbox("Select Prospect to Modify", ["None"] + list(df["Prospect Name"].unique()))
 
     if selected_prospect != "None":
