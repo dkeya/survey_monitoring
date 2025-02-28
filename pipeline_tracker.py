@@ -143,30 +143,75 @@ st.sidebar.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# ✅ Only One Menu Button Inside Sidebar (Removes Duplicate)
-st.sidebar.markdown("""
-    <button class="menu-button" onclick="toggleSidebar()">☰ Menu</button>
+# ✅ Improved Sidebar Toggle with Menu Button Positioned Separately
+st.markdown("""
+    <style>
+        /* Menu Button Positioned Separately from Logo */
+        .menu-button {
+            position: fixed;
+            top: 10px;
+            left: 15px;
+            background-color: #ff4b4b;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1200; /* Ensures button is above other elements */
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Adjust Sidebar for Mobile */
+        [data-testid="stSidebar"] {
+            transition: all 0.3s ease-in-out;
+            position: fixed;
+            left: 0;
+            z-index: 1100;
+            width: 300px;
+            background-color: #f8f9fa;
+            box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
+            height: 100vh;
+        }
+
+        /* Collapsed Sidebar State */
+        .collapsed-sidebar {
+            transform: translateX(-310px);
+        }
+
+        /* Expanded Sidebar State */
+        .expanded-sidebar {
+            transform: translateX(0);
+        }
+    </style>
+
+    <button class="menu-button" id="menuToggle">☰ Menu</button>
 """, unsafe_allow_html=True)
 
-# ✅ Sidebar Toggle Logic
+# ✅ Sidebar State Control
 if "menu_expanded" not in st.session_state:
     st.session_state["menu_expanded"] = True  # Default to expanded
 
-# ✅ JavaScript for Sidebar Collapse/Expand
-st.sidebar.markdown("""
+# ✅ JavaScript for Full Responsiveness & Sidebar Control
+st.markdown("""
     <script>
-        function toggleSidebar() {
+        document.addEventListener("DOMContentLoaded", function() {
             var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var logo = document.querySelector('.sidebar-logo');
+            var menuButton = document.getElementById("menuToggle");
 
-            if (sidebar.classList.contains('collapsed-sidebar')) {
-                sidebar.classList.remove('collapsed-sidebar');
-                logo.style.display = "block";
-            } else {
-                sidebar.classList.add('collapsed-sidebar');
-                logo.style.display = "none";
+            function toggleSidebar() {
+                if (sidebar.classList.contains('collapsed-sidebar')) {
+                    sidebar.classList.remove('collapsed-sidebar');
+                    sidebar.classList.add('expanded-sidebar');
+                } else {
+                    sidebar.classList.remove('expanded-sidebar');
+                    sidebar.classList.add('collapsed-sidebar');
+                }
             }
-        }
+
+            menuButton.addEventListener("click", toggleSidebar);
+        });
     </script>
 """, unsafe_allow_html=True)
 
@@ -226,7 +271,7 @@ st.markdown("""
         }
     </style>
     <div class="title-container">🎯 Business Prospects Pipeline Tracker</div>
-    <div class="marquee-container">Track your business prospects in real-time | Data-driven insights | Sales pipeline optimization! 🔥✨</div>
+    <div class="marquee-container">Track your business prospects in real-time   |   Data-driven insights   |   Sales pipeline optimization!!   🔥✨</div>
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="main-content"></div>', unsafe_allow_html=True)  # Push content down
@@ -413,9 +458,29 @@ st.dataframe(df_display, height=400, use_container_width=True)
 # Visualization
 if not df.empty:
     st.header("🔄 Conversion Funnel")
-    funnel_data = df["Stage"].value_counts().reset_index()
+
+    # Mapping 'Tender' to 'Lead Identified'
+    stage_mapping = {
+        "Tender": "Lead Identified",
+        "Lead Identified": "Lead Identified",
+        "Contacted": "Contacted",
+        "Proposal Sent": "Contacted",
+        "Negotiation": "Contacted",
+        "Won": "Won",
+        "Lost": "Won"  # Lost is grouped under Won to maintain 3 categories
+    }
+
+    df["Mapped Stage"] = df["Stage"].map(stage_mapping)
+
+    # Aggregating counts for the simplified categories
+    funnel_data = df["Mapped Stage"].value_counts().reset_index()
     funnel_data.columns = ["Stage", "Count"]
-    fig = px.funnel(funnel_data, x="Count", y="Stage")
+
+    # Sorting for logical funnel sequence
+    stage_order = ["Lead Identified", "Contacted", "Won"]
+    funnel_data = funnel_data.set_index("Stage").reindex(stage_order).reset_index()
+
+    fig = px.funnel(funnel_data, x="Count", y="Stage", title="🔄 Simplified Conversion Funnel")
     st.plotly_chart(fig, use_container_width=True)
 
     st.header("📈 Opportunity Size by Industry")
@@ -423,6 +488,23 @@ if not df.empty:
     fig = px.bar(industry_chart, x="Industry", y="Opportunity Size (KES)", color="Industry")
     st.plotly_chart(fig, use_container_width=True)
 
+st.header("📊 Industry Contribution")
+
+if not df.empty:
+    fig = px.pie(df, names="Industry", values="Opportunity Size (KES)", 
+                 title="📊 Industry Contribution", color_discrete_sequence=px.colors.sequential.Blues)
+    st.plotly_chart(fig, use_container_width=True)
+
+st.header("📊 Business Prospect Status Distribution")
+
+if not df.empty:
+    status_counts = df["Status"].value_counts().reset_index()
+    status_counts.columns = ["Status", "Count"]
+
+    fig_pie = px.pie(status_counts, names="Status", values="Count", 
+                     title="Current Status of Business Prospects",
+                     color_discrete_sequence=["#004aad", "#00b4db"])
+    st.plotly_chart(fig_pie, use_container_width=True)
 
 
 
