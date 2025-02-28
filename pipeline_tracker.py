@@ -465,14 +465,43 @@ if "sidebar_collapsed" not in st.session_state:
 if st.button("☰ Toggle Sidebar", key="unique_sidebar_toggle", help="Show/Hide Sidebar"):
     st.session_state["sidebar_collapsed"] = not st.session_state["sidebar_collapsed"]
 
-# ✅ Conditional Sidebar Rendering (Only show if sidebar is NOT collapsed)
+# ✅ Sidebar: Ensure Sidebar Components Are Rendered When Expanded
+if "menu_expanded" not in st.session_state:
+    st.session_state["menu_expanded"] = True  # Default state
+
+if st.session_state["menu_expanded"]:
+    st.sidebar.subheader("🔍 Filter Prospects")
+
+    # Ensure these variables are always defined
+    selected_stage = st.sidebar.selectbox("Filter by Stage", ["All"] + list(df["Stage"].unique()), key="filter_stage")
+    selected_status = st.sidebar.selectbox("Filter by Status", ["All", "Open", "Closed"], key="filter_status")
+    selected_industry = st.sidebar.selectbox("Filter by Industry", ["All"] + list(df["Industry"].unique()), key="filter_industry")
+    min_opportunity = st.sidebar.slider("Min Opportunity Size (KES)", 0, 10000000, 0, key="filter_opportunity")
+else:
+    # Ensure default values when sidebar is collapsed
+    selected_stage = "All"
+    selected_status = "All"
+    selected_industry = "All"
+    min_opportunity = 0
+
+# ✅ Apply Filters to DataFrame
+filtered_df = df.copy()
+if selected_stage != "All":
+    filtered_df = filtered_df[filtered_df["Stage"] == selected_stage]
+if selected_status != "All":
+    filtered_df = filtered_df[filtered_df["Status"] == selected_status]
+if selected_industry != "All":
+    filtered_df = filtered_df[filtered_df["Industry"] == selected_industry]
+filtered_df = filtered_df[filtered_df["Opportunity Size (KES)"] >= min_opportunity]
+
+# ✅ Conditional Sidebar Rendering (Only show if sidebar is NOT collapsed) 
 if not st.session_state["sidebar_collapsed"]:
     with st.sidebar:
         st.markdown("### 📌 Business Prospects Tracker")
 
         # Sidebar: Add Business Prospect
         with st.expander("➕ Add New Business Prospect", expanded=False):
-            with st.form("add_prospect_form"):
+            with st.form("add_prospect_form"):  # ❌ Removed key="form_add_prospect"
                 prospect_name = st.text_input("Prospect Name")
                 contact_person = st.text_input("Contact Person")
                 email = st.text_input("Email")
@@ -488,12 +517,12 @@ if not st.session_state["sidebar_collapsed"]:
 
         # Sidebar: Modify Existing Prospect   
         with st.expander("📝 Modify Existing Prospect", expanded=False):
-            selected_prospect = st.selectbox("Select Prospect to Modify", ["None"] + list(df["Prospect Name"].unique()))
+            selected_prospect = st.selectbox("Select Prospect to Modify", ["None"] + list(df["Prospect Name"].unique()), key="modify_prospect_select")
 
             if selected_prospect != "None":
                 selected_row = df[df["Prospect Name"] == selected_prospect].iloc[0]
 
-                with st.form("modify_prospect_form"):
+                with st.form("modify_prospect_form"):  # ❌ Removed key="form_modify_prospect"
                     new_contact_person = st.text_input("Contact Person", selected_row["Contact Person"])
                     new_email = st.text_input("Email", selected_row["Email"])
                     new_phone = st.text_input("Phone", selected_row["Phone"])
@@ -537,20 +566,46 @@ if not st.session_state["sidebar_collapsed"]:
                     st.rerun()
 
         # Sidebar: Filters & Data Management
-        st.subheader("🔍 Filter Prospects")
-        selected_stage = st.selectbox("Filter by Stage", ["All"] + list(df["Stage"].unique()))
-        selected_status = st.selectbox("Filter by Status", ["All", "Open", "Closed"])
-        selected_industry = st.selectbox("Filter by Industry", ["All"] + list(df["Industry"].unique()))
-        min_opportunity = st.slider("Min Opportunity Size (KES)", 0, 10000000, 0)
-
         st.subheader("📥 Data Management")
         st.download_button(label="📥 Download CSV", data=df.to_csv(index=False),
                            file_name="filtered_prospects.csv", mime="text/csv")
-        st.file_uploader("📤 Upload a CSV file", type=["csv"])
 
-# Upload CSV File
-# ✅ Unique Key for File Uploader
-uploaded_file = st.sidebar.file_uploader("📤 Upload a CSV file", type=["csv"], key="file_uploader_sidebar")
+        # ✅ Unique Key for File Uploader
+        uploaded_file = st.file_uploader("📤 Upload a CSV file", type=["csv"], key="file_uploader_sidebar")
+
+        if uploaded_file is not None:
+            try:
+                df_uploaded = pd.read_csv(uploaded_file)
+
+                # Ensure uploaded file has expected columns
+                expected_columns = ["Prospect Name", "Contact Person", "Email", "Phone", "Opportunity Size (KES)",
+                                    "Status", "Stage", "Industry", "Follow-up Date", "Notes", "Priority"]
+                if all(col in df_uploaded.columns for col in expected_columns):
+                    df = df_uploaded
+
+                    # Save DataFrame safely using a temporary file first
+                    temp_file = tempfile.NamedTemporaryFile(delete=False, mode='w', encoding='utf-8', newline='')
+                    df.to_csv(temp_file.name, index=False)
+                    temp_file.close()
+
+                    # Ensure existing file is safely replaced
+                    try:
+                        if os.path.exists(file_path):
+                            os.replace(temp_file.name, file_path)
+                        else:
+                            shutil.move(temp_file.name, file_path)
+                    except PermissionError:
+                        st.sidebar.error("🚨 Could not replace the file. Close any applications using it and try again.")
+
+                    st.sidebar.success("✅ File uploaded successfully!")
+                    st.rerun()
+                else:
+                    st.sidebar.error("🚨 Uploaded file is missing required columns.")
+            except Exception as e:
+                st.sidebar.error(f"🚨 Error processing file: {e}")
+
+# ✅ Unique Key for File Uploader (Ensure it's used only once)
+uploaded_file = st.sidebar.file_uploader("📤 Upload a CSV file", type=["csv"], key="file_uploader_sidebar_unique")
 
 if uploaded_file is not None:
     try:
