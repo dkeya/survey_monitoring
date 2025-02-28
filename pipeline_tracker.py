@@ -63,11 +63,15 @@ st.markdown("""
             z-index: 1000;
         }
 
-        /* Collapsed Sidebar for Mobile */
-        .collapsed-sidebar {
-            width: 0;
-            overflow: hidden;
-            padding: 0;
+        /* Adjust Sidebar for Mobile */
+        @media screen and (max-width: 768px) {
+            [data-testid="stSidebar"] {
+                width: 250px;
+                transform: translateX(-250px);
+            }
+            .sidebar-open [data-testid="stSidebar"] {
+                transform: translateX(0);
+            }
         }
 
         /* Sidebar Logo */
@@ -105,71 +109,20 @@ st.markdown("""
             display: none;
         }
 
-        /* Push content when sidebar is open */
+        /* Sidebar Transition */
+        .collapsed-sidebar {
+            transform: translateX(-300px);
+        }
+
         .main-content {
             margin-left: 300px;
             transition: margin-left 0.3s ease-in-out;
         }
 
-        /* Shrink content when sidebar is collapsed */
         .collapsed .main-content {
             margin-left: 0;
         }
-
-        /* 🔹 NEW: Responsive Sidebar for Mobile */
-        @media screen and (max-width: 768px) {
-            [data-testid="stSidebar"] {
-                position: fixed;
-                left: -300px;
-                width: 300px;
-                transition: left 0.3s ease-in-out;
-                z-index: 1200;
-            }
-
-            .sidebar-open {
-                left: 0 !important;
-            }
-
-            .menu-button {
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                background-color: #004aad;
-                color: white;
-                padding: 8px 12px;
-                border-radius: 5px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                z-index: 1300;
-                display: block;
-            }
-        }
     </style>
-""", unsafe_allow_html=True)
-
-# ✅ JavaScript for Sidebar Toggle
-st.markdown("""
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var menuButton = document.querySelector('.menu-button');
-
-            function toggleSidebar() {
-                var isCollapsed = sidebar.classList.contains('sidebar-open');
-
-                if (isCollapsed) {
-                    sidebar.classList.remove('sidebar-open');
-                    sidebar.style.left = "-300px";
-                } else {
-                    sidebar.classList.add('sidebar-open');
-                    sidebar.style.left = "0";
-                }
-            }
-
-            menuButton.addEventListener("click", toggleSidebar);
-        });
-    </script>
 """, unsafe_allow_html=True)
 
 # Sidebar content (scrolls normally)
@@ -211,27 +164,32 @@ st.markdown("""
         document.addEventListener("DOMContentLoaded", function() {
             var sidebar = document.querySelector('[data-testid="stSidebar"]');
             var menuButton = document.querySelector('.menu-button');
+            var mainContent = document.querySelector('.main-content');
 
             function toggleSidebar() {
                 var isCollapsed = sidebar.classList.contains('collapsed-sidebar');
                 
-                // Toggle class
+                // Toggle Sidebar for Desktop & Mobile
                 sidebar.classList.toggle('collapsed-sidebar');
+                document.body.classList.toggle('sidebar-open', !isCollapsed);
 
-                // Update Streamlit session state via a hidden Streamlit callback
-                fetch('/_stcore/script_run?callback=toggle_sidebar_state', {
-                    method: 'POST'
-                });
-
-                // Ensure sidebar width updates smoothly
-                if (isCollapsed) {
-                    sidebar.style.transform = "translateX(0)";
+                // Ensure proper visibility on mobile
+                if (window.innerWidth <= 768) {
+                    sidebar.style.transform = isCollapsed ? "translateX(0)" : "translateX(-250px)";
                 } else {
-                    sidebar.style.transform = "translateX(-310px)";
+                    sidebar.style.transform = isCollapsed ? "translateX(0)" : "translateX(-300px)";
                 }
             }
 
             menuButton.addEventListener("click", toggleSidebar);
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener("click", function(event) {
+                if (!sidebar.contains(event.target) && !menuButton.contains(event.target) && window.innerWidth <= 768) {
+                    sidebar.classList.add('collapsed-sidebar');
+                    document.body.classList.remove('sidebar-open');
+                }
+            });
         });
     </script>
 """, unsafe_allow_html=True)
