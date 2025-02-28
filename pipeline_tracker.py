@@ -126,7 +126,7 @@ if "menu_expanded" not in st.session_state:
     st.session_state["menu_expanded"] = True  # Default to expanded
 
 # Menu button toggles state
-if st.sidebar.button("☰ Menu", key="menu_toggle", help="Expand/Collapse Sidebar Sections"):
+if st.sidebar.button("☰ Menu", key="sidebar_toggle", help="Expand/Collapse Sidebar Sections"):
     st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
 
 # Add JavaScript to toggle sidebar visibility on mobile
@@ -143,50 +143,78 @@ st.sidebar.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# ✅ Improved Sidebar Toggle with Menu Button Positioned Separately
+# Sidebar: Menu Toggle Logic (Moved Above "Add New Business Prospect")
+if "menu_expanded" not in st.session_state:
+    st.session_state["menu_expanded"] = True  # Default to expanded
+
+with st.sidebar.expander("☰ Menu", expanded=True):
+    if st.button("Expand/Collapse Sidebar", key="menu_toggle"):
+        st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
+
+# ✅ Sidebar State Control for Responsiveness
 st.markdown("""
     <style>
-        /* Menu Button Positioned Separately from Logo */
-        .menu-button {
-            position: fixed;
-            top: 10px;
-            left: 15px;
-            background-color: #ff4b4b;
+        /* Sidebar Toggle Button */
+        .menu-toggle {
+            width: 100%;
+            background-color: #004aad;
             color: white;
-            padding: 10px 15px;
+            padding: 10px;
             border-radius: 5px;
-            border: none;
-            font-size: 18px;
+            text-align: center;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            z-index: 1200; /* Ensures button is above other elements */
-            transition: all 0.3s ease-in-out;
+            transition: background-color 0.3s;
         }
-
-        /* Adjust Sidebar for Mobile */
+        .menu-toggle:hover {
+            background-color: #003580;
+        }
+        
+        /* Sidebar Appearance */
         [data-testid="stSidebar"] {
             transition: all 0.3s ease-in-out;
-            position: fixed;
-            left: 0;
-            z-index: 1100;
-            width: 300px;
             background-color: #f8f9fa;
             box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
             height: 100vh;
+            width: 300px;
+            position: fixed;
+            left: 0;
+            z-index: 1100;
         }
-
-        /* Collapsed Sidebar State */
+        
+        /* Collapsed Sidebar */
         .collapsed-sidebar {
             transform: translateX(-310px);
         }
-
-        /* Expanded Sidebar State */
+        
+        /* Expanded Sidebar */
         .expanded-sidebar {
             transform: translateX(0);
         }
     </style>
+""", unsafe_allow_html=True)
 
-    <button class="menu-button" id="menuToggle">☰ Menu</button>
+# ✅ JavaScript to Toggle Sidebar
+st.markdown("""
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            var menuButton = document.querySelector('.menu-toggle');
+
+            function toggleSidebar() {
+                if (sidebar.classList.contains('collapsed-sidebar')) {
+                    sidebar.classList.remove('collapsed-sidebar');
+                    sidebar.classList.add('expanded-sidebar');
+                } else {
+                    sidebar.classList.remove('expanded-sidebar');
+                    sidebar.classList.add('collapsed-sidebar');
+                }
+            }
+
+            menuButton.addEventListener("click", toggleSidebar);
+        });
+    </script>
 """, unsafe_allow_html=True)
 
 # ✅ Sidebar State Control
