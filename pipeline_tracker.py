@@ -121,13 +121,110 @@ st.markdown("""
 # Sidebar content (scrolls normally)
 st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
-# Sidebar: Menu Toggle Logic
+# ✅ Ensure session state variable exists
 if "menu_expanded" not in st.session_state:
-    st.session_state["menu_expanded"] = True  # Default to expanded
+    st.session_state["menu_expanded"] = True  # Sidebar starts expanded
 
-# Menu button toggles state
-if st.sidebar.button("☰ Menu", key="sidebar_toggle", help="Expand/Collapse Sidebar Sections"):
-    st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
+# ✅ Function to toggle sidebar state
+def toggle_sidebar_state():
+    st.session_state["menu_expanded"] = not st.session_state.get("menu_expanded", True)
+
+# ✅ Sidebar toggle button (replaces incorrect enqueue_script call)
+st.button("☰ Toggle Sidebar", key="unique_toggle_sidebar_btn", on_click=toggle_sidebar_state)
+
+# ✅ Floating Menu Button (Always Visible)
+st.markdown("""
+    <style>
+        .menu-button {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: #004aad;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1200;
+            border: none;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            var menuButton = document.querySelector('.menu-button');
+
+            function toggleSidebar() {
+                var isCollapsed = sidebar.classList.contains('collapsed-sidebar');
+                
+                // Toggle class
+                sidebar.classList.toggle('collapsed-sidebar');
+
+                // Update Streamlit session state via a hidden Streamlit callback
+                fetch('/_stcore/script_run?callback=toggle_sidebar_state', {
+                    method: 'POST'
+                });
+
+                // Ensure sidebar width updates smoothly
+                if (isCollapsed) {
+                    sidebar.style.transform = "translateX(0)";
+                } else {
+                    sidebar.style.transform = "translateX(-310px)";
+                }
+            }
+
+            menuButton.addEventListener("click", toggleSidebar);
+        });
+    </script>
+""", unsafe_allow_html=True)
+
+# ✅ Sidebar Width & Animation
+sidebar_width = "300px" if st.session_state["menu_expanded"] else "0px"
+
+# ✅ Sidebar Expansion & Animation
+sidebar_width = "300px" if st.session_state["menu_expanded"] else "0px"
+
+st.markdown(f"""
+    <style>
+        /* Sidebar expands/collapses smoothly */
+        [data-testid="stSidebar"] {{
+            transition: all 0.3s ease-in-out;
+            width: {sidebar_width} !important;
+            transform: translateX({"0" if st.session_state["menu_expanded"] else "-310px"});
+            position: fixed;
+            left: 0;
+            z-index: 1100;
+            background-color: #f8f9fa;
+            box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
+        }}
+
+        /* Ensure content shifts correctly */
+        .main-content {{
+            transition: margin-left 0.3s ease-in-out;
+            margin-left: {sidebar_width};
+        }}
+
+        /* Fix menu button so it does not move */
+        .menu-button {{
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: #004aad;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1200;
+            border: none;
+        }}
+    </style>
+""", unsafe_allow_html=True)
 
 # Add JavaScript to toggle sidebar visibility on mobile
 # Sidebar Content (scrolls normally)
@@ -146,9 +243,6 @@ st.sidebar.markdown(f"""
 # Sidebar: Menu Toggle Logic (Toggles Sidebar Width)
 if "sidebar_collapsed" not in st.session_state:
     st.session_state["sidebar_collapsed"] = False  # Default: Sidebar expanded
-
-if st.sidebar.button("☰ Menu", key="sidebar_width_toggle", help="Expand/Collapse Sidebar Width"):
-    st.session_state["sidebar_collapsed"] = not st.session_state["sidebar_collapsed"]
 
 # ✅ Sidebar State Control for Responsive Width Adjustment
 st.markdown("""
@@ -278,16 +372,18 @@ st.markdown("""
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var menuButton = document.querySelector('.menu-toggle');
+            var menuButton = document.querySelector('.menu-button');
 
             function toggleSidebar() {
-                if (sidebar.classList.contains('collapsed-sidebar')) {
-                    sidebar.classList.remove('collapsed-sidebar');
-                    sidebar.classList.add('expanded-sidebar');
-                } else {
-                    sidebar.classList.remove('expanded-sidebar');
-                    sidebar.classList.add('collapsed-sidebar');
-                }
+                var isCollapsed = sidebar.style.transform === "translateX(-310px)";
+                
+                // Toggle transformation
+                sidebar.style.transform = isCollapsed ? "translateX(0)" : "translateX(-310px)";
+                
+                // Notify Streamlit to update session state
+                fetch('/toggle_sidebar')
+                  .then(response => response.json())
+                  .then(data => console.log('Sidebar state updated:', data));
             }
 
             menuButton.addEventListener("click", toggleSidebar);
@@ -297,7 +393,11 @@ st.markdown("""
 
 # ✅ Sidebar State Control
 if "menu_expanded" not in st.session_state:
-    st.session_state["menu_expanded"] = True  # Default to expanded
+    st.session_state["menu_expanded"] = True  # Sidebar starts expanded
+
+# ✅ Define function to toggle sidebar state
+def toggle_sidebar_state():
+    st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
 
 # ✅ JavaScript for Full Responsiveness & Sidebar Control
 st.markdown("""
