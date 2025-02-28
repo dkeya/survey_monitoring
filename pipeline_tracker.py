@@ -115,7 +115,61 @@ st.markdown("""
         .collapsed .main-content {
             margin-left: 0;
         }
+
+        /* 🔹 NEW: Responsive Sidebar for Mobile */
+        @media screen and (max-width: 768px) {
+            [data-testid="stSidebar"] {
+                position: fixed;
+                left: -300px;
+                width: 300px;
+                transition: left 0.3s ease-in-out;
+                z-index: 1200;
+            }
+
+            .sidebar-open {
+                left: 0 !important;
+            }
+
+            .menu-button {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                background-color: #004aad;
+                color: white;
+                padding: 8px 12px;
+                border-radius: 5px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                z-index: 1300;
+                display: block;
+            }
+        }
     </style>
+""", unsafe_allow_html=True)
+
+# ✅ JavaScript for Sidebar Toggle
+st.markdown("""
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            var menuButton = document.querySelector('.menu-button');
+
+            function toggleSidebar() {
+                var isCollapsed = sidebar.classList.contains('sidebar-open');
+
+                if (isCollapsed) {
+                    sidebar.classList.remove('sidebar-open');
+                    sidebar.style.left = "-300px";
+                } else {
+                    sidebar.classList.add('sidebar-open');
+                    sidebar.style.left = "0";
+                }
+            }
+
+            menuButton.addEventListener("click", toggleSidebar);
+        });
+    </script>
 """, unsafe_allow_html=True)
 
 # Sidebar content (scrolls normally)
