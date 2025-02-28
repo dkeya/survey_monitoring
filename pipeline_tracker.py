@@ -143,13 +143,91 @@ st.sidebar.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Sidebar: Menu Toggle Logic (Moved Above "Add New Business Prospect")
-if "menu_expanded" not in st.session_state:
-    st.session_state["menu_expanded"] = True  # Default to expanded
+# Sidebar: Menu Toggle Logic (Toggles Sidebar Width)
+if "sidebar_collapsed" not in st.session_state:
+    st.session_state["sidebar_collapsed"] = False  # Default: Sidebar expanded
 
-with st.sidebar.expander("☰ Menu", expanded=True):
-    if st.button("Expand/Collapse Sidebar", key="menu_toggle"):
-        st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
+if st.sidebar.button("☰ Menu", key="sidebar_width_toggle", help="Expand/Collapse Sidebar Width"):
+    st.session_state["sidebar_collapsed"] = not st.session_state["sidebar_collapsed"]
+
+# ✅ Sidebar State Control for Responsive Width Adjustment
+st.markdown("""
+    <style>
+        /* Sidebar Appearance */
+        [data-testid="stSidebar"] {
+            transition: all 0.3s ease-in-out;
+            background-color: #f8f9fa;
+            box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            z-index: 1100;
+            width: 300px; /* Default width */
+        }
+        
+        /* Collapsed Sidebar (Width Shrinks Instead of Hiding Length) */
+        .collapsed-sidebar {
+            width: 60px !important; /* Adjust width for better visibility on mobile */
+        }
+        
+        /* Ensuring content adjusts when sidebar shrinks */
+        .main-content {
+            margin-left: 300px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .collapsed .main-content {
+            margin-left: 60px; /* Matches collapsed sidebar width */
+        }
+        
+        /* Always Visible Menu Button */
+        .menu-button {
+            width: 100%;
+            background-color: #004aad;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .menu-button:hover {
+            background-color: #003580;
+        }
+
+        /* Hide text inside collapsed sidebar */
+        .collapsed-sidebar .sidebar-content {
+            display: none;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# ✅ JavaScript to Toggle Sidebar Width Dynamically
+st.markdown("""
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            var bodyContent = document.querySelector('.main-content');
+
+            function toggleSidebarWidth() {
+                if (sidebar.classList.contains('collapsed-sidebar')) {
+                    sidebar.classList.remove('collapsed-sidebar');
+                    bodyContent.classList.remove('collapsed');
+                } else {
+                    sidebar.classList.add('collapsed-sidebar');
+                    bodyContent.classList.add('collapsed');
+                }
+            }
+
+            document.querySelector('.menu-button').addEventListener("click", toggleSidebarWidth);
+        });
+    </script>
+""", unsafe_allow_html=True)
+
+# Apply collapsed state if needed
+sidebar_class = "collapsed-sidebar" if st.session_state["sidebar_collapsed"] else ""
+st.markdown(f'<div class="{sidebar_class}"></div>', unsafe_allow_html=True)
 
 # ✅ Sidebar State Control for Responsiveness
 st.markdown("""
