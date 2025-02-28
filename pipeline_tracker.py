@@ -204,36 +204,40 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ✅ JavaScript to Detect Screen Width & Auto-Collapse on Mobile
 st.markdown("""
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var mainMenuButton = document.querySelector('.menu-button');
+            var menuButton = document.querySelector('.menu-button');
             var bodyContent = document.querySelector('.main-content');
 
             function autoCollapseSidebar() {
                 if (window.innerWidth < 768) {
-                    sidebar.classList.add('collapsed-sidebar');
-                    bodyContent.classList.add('collapsed');
+                    sidebar.style.width = "0px";
+                    sidebar.style.overflow = "hidden";
+                    bodyContent.style.marginLeft = "0px";
                 }
             }
 
             function toggleSidebarWidth() {
-                if (sidebar.classList.contains('collapsed-sidebar')) {
-                    sidebar.classList.remove('collapsed-sidebar');
-                    bodyContent.classList.remove('collapsed');
+                if (sidebar.style.width === "0px" || sidebar.style.width === "") {
+                    sidebar.style.width = "300px";  // Expanded width
+                    sidebar.style.overflow = "auto";
+                    bodyContent.style.marginLeft = "300px"; // Push main content
                 } else {
-                    sidebar.classList.add('collapsed-sidebar');
-                    bodyContent.classList.add('collapsed');
+                    sidebar.style.width = "0px";
+                    sidebar.style.overflow = "hidden";
+                    bodyContent.style.marginLeft = "0px"; // Reset content position
                 }
             }
 
-            // Auto-collapse sidebar on mobile load
+            // Auto-collapse on mobile load
             autoCollapseSidebar();
 
-            // Toggle sidebar when menu button is clicked
-            mainMenuButton.addEventListener("click", toggleSidebarWidth);
+            // Smooth expand/collapse transition
+            menuButton.addEventListener("click", function() {
+                toggleSidebarWidth();
+            });
         });
     </script>
 """, unsafe_allow_html=True)
@@ -444,7 +448,7 @@ st.markdown("""
     }
         .marquee-container {
             position: fixed;
-            top: 85px; /* Increased spacing to move it below the title */
+            top: 90px; /* Increased spacing to move it below the title */
             left: 0;
             width: 100%;
             background: rgba(0, 74, 173, 0.1);
