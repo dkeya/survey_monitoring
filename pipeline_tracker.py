@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import pandas as pd
 import plotly.express as px
 import os
@@ -143,12 +143,104 @@ st.sidebar.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Sidebar: Menu Toggle Logic (Toggles Sidebar Width)
+# Sidebar: Auto-collapse on Mobile & Menu Button Always Visible
 if "sidebar_collapsed" not in st.session_state:
     st.session_state["sidebar_collapsed"] = False  # Default: Sidebar expanded
 
-if st.sidebar.button("☰ Menu", key="sidebar_width_toggle", help="Expand/Collapse Sidebar Width"):
+# Menu button placed on main face before operation window toggling
+if st.button("☰ Menu", key="main_menu_button", help="Show/Hide Sidebar"):
     st.session_state["sidebar_collapsed"] = not st.session_state["sidebar_collapsed"]
+
+# ✅ Sidebar State Control for Responsive Width Adjustment
+st.markdown("""
+    <style>
+        /* Sidebar Appearance */
+        [data-testid="stSidebar"] {
+            transition: all 0.3s ease-in-out;
+            background-color: #f8f9fa;
+            box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            z-index: 1100;
+            width: 300px; /* Default width */
+        }
+
+        /* Collapsed Sidebar (Hidden initially on Mobile) */
+        .collapsed-sidebar {
+            width: 0 !important;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        /* Adjust Content Area */
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .collapsed .main-content {
+            margin-left: 0;
+        }
+
+        /* Always Visible Menu Button */
+        .menu-button {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: #004aad;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1200;
+            display: block;
+        }
+
+        .menu-button:hover {
+            background-color: #003580;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# ✅ JavaScript to Detect Screen Width & Auto-Collapse on Mobile
+st.markdown("""
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            var mainMenuButton = document.querySelector('.menu-button');
+            var bodyContent = document.querySelector('.main-content');
+
+            function autoCollapseSidebar() {
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('collapsed-sidebar');
+                    bodyContent.classList.add('collapsed');
+                }
+            }
+
+            function toggleSidebarWidth() {
+                if (sidebar.classList.contains('collapsed-sidebar')) {
+                    sidebar.classList.remove('collapsed-sidebar');
+                    bodyContent.classList.remove('collapsed');
+                } else {
+                    sidebar.classList.add('collapsed-sidebar');
+                    bodyContent.classList.add('collapsed');
+                }
+            }
+
+            // Auto-collapse sidebar on mobile load
+            autoCollapseSidebar();
+
+            // Toggle sidebar when menu button is clicked
+            mainMenuButton.addEventListener("click", toggleSidebarWidth);
+        });
+    </script>
+""", unsafe_allow_html=True)
+
+# Apply collapsed state if needed
+sidebar_class = "collapsed-sidebar" if st.session_state["sidebar_collapsed"] else ""
+st.markdown(f'<div class="{sidebar_class}"></div>', unsafe_allow_html=True)
 
 # ✅ Sidebar State Control for Responsive Width Adjustment
 st.markdown("""
