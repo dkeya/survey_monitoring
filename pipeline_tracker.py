@@ -140,16 +140,14 @@ st.markdown("""
 # Sidebar content (scrolls normally)
 st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
-# ✅ Ensure session state variable exists
-if "menu_expanded" not in st.session_state:
-    st.session_state["menu_expanded"] = True  # Sidebar starts expanded
-
-# ✅ Function to toggle sidebar state
+# ✅ Ensure session state variable exists & define the toggle function
 def toggle_sidebar_state():
-    st.session_state["menu_expanded"] = not st.session_state.get("menu_expanded", True)
+    if "menu_expanded" not in st.session_state:
+        st.session_state["menu_expanded"] = True  # Default state
+    st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
 
 # ✅ Sidebar toggle button (replaces incorrect enqueue_script call)
-st.button("☰ Toggle Sidebar", key="unique_toggle_sidebar_btn", on_click=toggle_sidebar_state)
+st.button("☰ Toggle Sidebar", key="toggle_sidebar_btn", on_click=toggle_sidebar_state)
 
 # ✅ Floating Menu Button (Always Visible)
 st.markdown("""
@@ -413,14 +411,6 @@ st.markdown("""
         });
     </script>
 """, unsafe_allow_html=True)
-
-# ✅ Sidebar State Control
-if "menu_expanded" not in st.session_state:
-    st.session_state["menu_expanded"] = True  # Sidebar starts expanded
-
-# ✅ Define function to toggle sidebar state
-def toggle_sidebar_state():
-    st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
 
 # ✅ JavaScript for Full Responsiveness & Sidebar Control
 st.markdown("""
