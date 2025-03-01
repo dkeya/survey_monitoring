@@ -57,36 +57,15 @@ st.markdown("""
             overflow-y: auto;
             height: 100vh;
             width: 300px;
-            transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
             position: fixed;
             left: 0;
             z-index: 1000;
         }
 
-        /* Adjust Sidebar for Mobile */
-        @media screen and (max-width: 768px) {
-            [data-testid="stSidebar"] {
-                width: 250px;
-                transform: translateX(-250px);
-                transition: transform 0.3s ease-in-out;
-            }
-            .sidebar-open [data-testid="stSidebar"] {
-                transform: translateX(0);
-            }
-        }
-
-        /* Sidebar Logo */
-        .sidebar-logo {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 300px;
-            background-color: #f8f9fa;
-            padding: 15px 0;
-            text-align: center;
-            z-index: 1001;
-            border-bottom: 2px solid #ddd;
-            transition: all 0.3s ease-in-out;
+        /* Collapsed Sidebar for Mobile */
+        .collapsed-sidebar {
+            transform: translateX(-310px);
         }
 
         /* Menu button always visible on mobile */
@@ -105,34 +84,15 @@ st.markdown("""
             display: block;
         }
 
-        /* Hide menu button when sidebar is open */
-        .expanded .menu-button {
-            display: none;
-        }
-
-        /* Sidebar Transition */
-        .collapsed-sidebar {
-            transform: translateX(-300px);
-        }
-
-        /* Main Content Shifting */
+        /* Push content when sidebar is open */
         .main-content {
             margin-left: 300px;
             transition: margin-left 0.3s ease-in-out;
         }
 
+        /* Shrink content when sidebar is collapsed */
         .collapsed .main-content {
             margin-left: 0;
-        }
-
-        /* Mobile Sidebar Adjustments */
-        @media screen and (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-            }
-            .sidebar-open .main-content {
-                margin-left: 250px;
-            }
         }
     </style>
 """, unsafe_allow_html=True)
@@ -140,253 +100,17 @@ st.markdown("""
 # Sidebar content (scrolls normally)
 st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
-# ✅ Ensure session state variable exists & define the toggle function
-def toggle_sidebar_state():
-    if "menu_expanded" not in st.session_state:
-        st.session_state["menu_expanded"] = True  # Default state
-    st.session_state["menu_expanded"] = not st.session_state["menu_expanded"]
-
-# ✅ Sidebar toggle button (replaces incorrect enqueue_script call)
-st.button("☰ Toggle Sidebar", key="toggle_sidebar_btn", on_click=toggle_sidebar_state)
-
-# ✅ Floating Menu Button (Always Visible)
-st.markdown("""
-    <style>
-        .menu-button {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            background-color: #004aad;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1200;
-            border: none;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-st.markdown(""" 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var menuButton = document.querySelector('.menu-button');
-
-            function toggleSidebar() {
-                if (sidebar.classList.contains('collapsed-sidebar')) {
-                    sidebar.classList.remove('collapsed-sidebar');
-                    document.body.classList.add('sidebar-open');
-                } else {
-                    sidebar.classList.add('collapsed-sidebar');
-                    document.body.classList.remove('sidebar-open');
-                }
-            }
-
-            menuButton.addEventListener("click", function(event) {
-                event.stopPropagation();  // Prevent immediate closing
-                toggleSidebar();
-                fetch('/toggle_sidebar')  // Streamlit session update
-                    .then(response => response.json())
-                    .then(data => console.log('Sidebar toggled:', data));
-            });
-
-            document.addEventListener("click", function(event) {
-                if (!sidebar.contains(event.target) && !menuButton.contains(event.target) && window.innerWidth <= 768) {
-                    sidebar.classList.add('collapsed-sidebar');
-                    document.body.classList.remove('sidebar-open');
-                }
-            });
-        });
-    </script>
-""", unsafe_allow_html=True)
-
-# ✅ Sidebar Width & Animation
-sidebar_width = "300px" if st.session_state["menu_expanded"] else "0px"
-
-# ✅ Sidebar Expansion & Animation
-sidebar_width = "300px" if st.session_state["menu_expanded"] else "0px"
-
-st.markdown(f"""
-    <style>
-        /* Sidebar expands/collapses smoothly */
-        [data-testid="stSidebar"] {{
-            transition: all 0.3s ease-in-out;
-            width: {sidebar_width} !important;
-            transform: translateX({"0" if st.session_state["menu_expanded"] else "-310px"});
-            position: fixed;
-            left: 0;
-            z-index: 1100;
-            background-color: #f8f9fa;
-            box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
-        }}
-
-        /* Ensure content shifts correctly */
-        .main-content {{
-            transition: margin-left 0.3s ease-in-out;
-            margin-left: {sidebar_width};
-        }}
-
-        /* Fix menu button so it does not move */
-        .menu-button {{
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            background-color: #004aad;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1200;
-            border: none;
-        }}
-    </style>
-""", unsafe_allow_html=True)
-
-# Add JavaScript to toggle sidebar visibility on mobile
-# Sidebar Content (scrolls normally)
-st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
-
-# ✅ Sidebar Content Wrapper (Ensures Scroll)
-st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
-
-# ✅ Sidebar Logo (Always Visible)
-st.sidebar.markdown(f"""
-    <div class="sidebar-logo">
-        {f'<img src="data:image/png;base64,{logo_base64}" style="max-width: 80%; margin-bottom: 10px;">' if logo_base64 else '<p>⚠️ Logo Not Found</p>'}
-    </div>
-""", unsafe_allow_html=True)
-
-# Sidebar: Menu Toggle Logic (Toggles Sidebar Width)
+# Sidebar: Menu Toggle Logic
 if "sidebar_collapsed" not in st.session_state:
     st.session_state["sidebar_collapsed"] = False  # Default: Sidebar expanded
 
-# ✅ Sidebar State Control for Responsive Width Adjustment
-st.markdown("""
-    <style>
-        /* Sidebar Appearance */
-        [data-testid="stSidebar"] {
-            transition: all 0.3s ease-in-out;
-            background-color: #f8f9fa;
-            box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            z-index: 1100;
-            width: 300px; /* Default width */
-        }
-        
-        /* Collapsed Sidebar (Width Shrinks Instead of Hiding Length) */
-        .collapsed-sidebar {
-            width: 60px !important; /* Adjust width for better visibility on mobile */
-        }
-        
-        /* Ensuring content adjusts when sidebar shrinks */
-        .main-content {
-            margin-left: 300px;
-            transition: margin-left 0.3s ease-in-out;
-        }
-        .collapsed .main-content {
-            margin-left: 60px; /* Matches collapsed sidebar width */
-        }
-        
-        /* Always Visible Menu Button */
-        .menu-button {
-            width: 100%;
-            background-color: #004aad;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .menu-button:hover {
-            background-color: #003580;
-        }
-
-        /* Hide text inside collapsed sidebar */
-        .collapsed-sidebar .sidebar-content {
-            display: none;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# ✅ JavaScript to Toggle Sidebar Width Dynamically
-st.markdown("""
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var bodyContent = document.querySelector('.main-content');
-
-            function toggleSidebarWidth() {
-                if (sidebar.classList.contains('collapsed-sidebar')) {
-                    sidebar.classList.remove('collapsed-sidebar');
-                    bodyContent.classList.remove('collapsed');
-                } else {
-                    sidebar.classList.add('collapsed-sidebar');
-                    bodyContent.classList.add('collapsed');
-                }
-            }
-
-            document.querySelector('.menu-button').addEventListener("click", toggleSidebarWidth);
-        });
-    </script>
-""", unsafe_allow_html=True)
+# Menu button toggles state
+if st.button("☰ Menu", key="sidebar_toggle", help="Expand/Collapse Sidebar"):
+    st.session_state["sidebar_collapsed"] = not st.session_state["sidebar_collapsed"]
 
 # Apply collapsed state if needed
 sidebar_class = "collapsed-sidebar" if st.session_state["sidebar_collapsed"] else ""
 st.markdown(f'<div class="{sidebar_class}"></div>', unsafe_allow_html=True)
-
-# ✅ Sidebar State Control for Responsiveness
-st.markdown("""
-    <style>
-        /* Sidebar Toggle Button */
-        .menu-toggle {
-            width: 100%;
-            background-color: #004aad;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .menu-toggle:hover {
-            background-color: #003580;
-        }
-        
-        /* Sidebar Appearance */
-        [data-testid="stSidebar"] {
-            transition: all 0.3s ease-in-out;
-            background-color: #f8f9fa;
-            box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
-            height: 100vh;
-            width: 300px;
-            position: fixed;
-            left: 0;
-            z-index: 1100;
-        }
-        
-        /* Collapsed Sidebar */
-        .collapsed-sidebar {
-            transform: translateX(-310px);
-        }
-        
-        /* Expanded Sidebar */
-        .expanded-sidebar {
-            transform: translateX(0);
-        }
-    </style>
-""", unsafe_allow_html=True)
 
 # ✅ JavaScript to Toggle Sidebar
 st.markdown("""
@@ -396,35 +120,9 @@ st.markdown("""
             var menuButton = document.querySelector('.menu-button');
 
             function toggleSidebar() {
-                var isCollapsed = sidebar.style.transform === "translateX(-310px)";
-                
-                // Toggle transformation
-                sidebar.style.transform = isCollapsed ? "translateX(0)" : "translateX(-310px)";
-                
-                // Notify Streamlit to update session state
-                fetch('/toggle_sidebar')
-                  .then(response => response.json())
-                  .then(data => console.log('Sidebar state updated:', data));
-            }
-
-            menuButton.addEventListener("click", toggleSidebar);
-        });
-    </script>
-""", unsafe_allow_html=True)
-
-# ✅ JavaScript for Full Responsiveness & Sidebar Control
-st.markdown("""
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var menuButton = document.getElementById("menuToggle");
-
-            function toggleSidebar() {
                 if (sidebar.classList.contains('collapsed-sidebar')) {
                     sidebar.classList.remove('collapsed-sidebar');
-                    sidebar.classList.add('expanded-sidebar');
                 } else {
-                    sidebar.classList.remove('expanded-sidebar');
                     sidebar.classList.add('collapsed-sidebar');
                 }
             }
@@ -437,32 +135,21 @@ st.markdown("""
 # Title & Marquee (Fixed with Proper Spacing)
 st.markdown("""
     <style>
-            .title-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        background: linear-gradient(to right, #1F3C63, #004aad);
-        color: white;
-        padding: 15px;
-        font-size: 24px;
-        font-weight: bold;
-        text-align: center;
-        z-index: 999; /* Lower z-index so sidebar overlays it */
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    }
+        .title-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to right, #1F3C63, #004aad);
+            color: white;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 999; /* Lower z-index so sidebar overlays it */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
 
-    [data-testid="stSidebar"] {
-        background-color: #f8f9fa;
-        box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
-        overflow-y: auto;
-        height: 100vh;
-        width: 300px;
-        transition: all 0.3s ease-in-out;
-        position: fixed;
-        left: 0;
-        z-index: 1001; /* Higher z-index to overlay title */
-    }
         .marquee-container {
             position: fixed;
             top: 85px; /* Increased spacing to move it below the title */
@@ -490,12 +177,11 @@ st.markdown("""
         }
     </style>
     <div class="title-container">🎯 Business Prospects Pipeline Tracker</div>
-    <div class="marquee-container">Track your business prospects with real-time analytics   |   Stay ahead with data-driven insights   |   Optimize your sales pipeline efficiently!!   🔥✨</div>
+    <div class="marquee-container">Track your business prospects in real-time   |   Data-driven insights   |   Sales pipeline optimization!!   🔥✨</div>
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="main-content"></div>', unsafe_allow_html=True)  # Push content down
 
-# KPI Metrics
 # KPI Metrics
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("📌 Total Prospects", df.shape[0])
@@ -602,16 +288,14 @@ with st.sidebar.expander("📝 Modify Existing Prospect", expanded=False):
             st.rerun()
 
 # Filter Section
-if st.session_state["menu_expanded"]:
-    st.sidebar.subheader("🔍 Filter Prospects")
+st.sidebar.subheader("🔍 Filter Prospects")
 selected_stage = st.sidebar.selectbox("Filter by Stage", ["All"] + list(df["Stage"].unique()))
 selected_status = st.sidebar.selectbox("Filter by Status", ["All", "Open", "Closed"])
 selected_industry = st.sidebar.selectbox("Filter by Industry", ["All"] + list(df["Industry"].unique()))
 min_opportunity = st.sidebar.slider("Min Opportunity Size (KES)", 0, 10000000, 0)
 
 # Sidebar: Download & Upload CSV
-if st.session_state["menu_expanded"]:
-    st.sidebar.subheader("📥 Data Management")
+st.sidebar.subheader("📥 Data Management")
 
 # Download CSV Button
 st.sidebar.download_button(
@@ -724,10 +408,3 @@ if not df.empty:
                      title="Current Status of Business Prospects",
                      color_discrete_sequence=["#004aad", "#00b4db"])
     st.plotly_chart(fig_pie, use_container_width=True)
-
-
-
-
-
-
-
