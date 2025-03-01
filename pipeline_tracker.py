@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
@@ -57,31 +57,16 @@ st.markdown("""
             overflow-y: auto;
             height: 100vh;
             width: 300px;
-            transition: all 0.3s ease-in-out;
             position: fixed;
             left: 0;
             z-index: 1000;
         }
 
-        /* Collapsed Sidebar for Mobile */
-        .collapsed-sidebar {
-            transform: translateX(-310px);
-        }
-
-        /* Menu button always visible on mobile */
-        .menu-button {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background-color: #ff4b4b;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            z-index: 1100;
-            display: block;
+        /* Adjust Sidebar for Mobile */
+        @media screen and (max-width: 768px) {
+            [data-testid="stSidebar"] {
+                width: 250px; /* Slightly narrower for mobile */
+            }
         }
 
         /* Push content when sidebar is open */
@@ -90,9 +75,11 @@ st.markdown("""
             transition: margin-left 0.3s ease-in-out;
         }
 
-        /* Shrink content when sidebar is collapsed */
-        .collapsed .main-content {
-            margin-left: 0;
+        /* Adjust main content margin for mobile */
+        @media screen and (max-width: 768px) {
+            .main-content {
+                margin-left: 250px; /* Match sidebar width */
+            }
         }
     </style>
 """, unsafe_allow_html=True)
@@ -100,36 +87,11 @@ st.markdown("""
 # Sidebar content (scrolls normally)
 st.sidebar.markdown('<div class="sidebar-content">', unsafe_allow_html=True)
 
-# Sidebar: Menu Toggle Logic
-if "sidebar_collapsed" not in st.session_state:
-    st.session_state["sidebar_collapsed"] = False  # Default: Sidebar expanded
-
-# Menu button toggles state
-if st.button("☰ Menu", key="sidebar_toggle", help="Expand/Collapse Sidebar"):
-    st.session_state["sidebar_collapsed"] = not st.session_state["sidebar_collapsed"]
-
-# Apply collapsed state if needed
-sidebar_class = "collapsed-sidebar" if st.session_state["sidebar_collapsed"] else ""
-st.markdown(f'<div class="{sidebar_class}"></div>', unsafe_allow_html=True)
-
-# ✅ JavaScript to Toggle Sidebar
-st.markdown("""
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var menuButton = document.querySelector('.menu-button');
-
-            function toggleSidebar() {
-                if (sidebar.classList.contains('collapsed-sidebar')) {
-                    sidebar.classList.remove('collapsed-sidebar');
-                } else {
-                    sidebar.classList.add('collapsed-sidebar');
-                }
-            }
-
-            menuButton.addEventListener("click", toggleSidebar);
-        });
-    </script>
+# ✅ Sidebar Logo (Always Visible)
+st.sidebar.markdown(f"""
+    <div class="sidebar-logo">
+        {f'<img src="data:image/png;base64,{logo_base64}" style="max-width: 80%; margin-bottom: 10px;">' if logo_base64 else '<p>⚠️ Logo Not Found</p>'}
+    </div>
 """, unsafe_allow_html=True)
 
 # Title & Marquee (Fixed with Proper Spacing)
