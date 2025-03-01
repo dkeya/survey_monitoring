@@ -57,7 +57,7 @@ st.markdown("""
             overflow-y: auto;
             height: 100vh;
             width: 300px;
-            transition: all 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
             position: fixed;
             left: 0;
             z-index: 1000;
@@ -68,6 +68,7 @@ st.markdown("""
             [data-testid="stSidebar"] {
                 width: 250px;
                 transform: translateX(-250px);
+                transition: transform 0.3s ease-in-out;
             }
             .sidebar-open [data-testid="stSidebar"] {
                 transform: translateX(0);
@@ -114,6 +115,7 @@ st.markdown("""
             transform: translateX(-300px);
         }
 
+        /* Main Content Shifting */
         .main-content {
             margin-left: 300px;
             transition: margin-left 0.3s ease-in-out;
@@ -121,6 +123,16 @@ st.markdown("""
 
         .collapsed .main-content {
             margin-left: 0;
+        }
+
+        /* Mobile Sidebar Adjustments */
+        @media screen and (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar-open .main-content {
+                margin-left: 250px;
+            }
         }
     </style>
 """, unsafe_allow_html=True)
@@ -159,31 +171,30 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
+st.markdown(""" 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var sidebar = document.querySelector('[data-testid="stSidebar"]');
             var menuButton = document.querySelector('.menu-button');
-            var mainContent = document.querySelector('.main-content');
 
             function toggleSidebar() {
-                var isCollapsed = sidebar.classList.contains('collapsed-sidebar');
-                
-                // Toggle Sidebar for Desktop & Mobile
-                sidebar.classList.toggle('collapsed-sidebar');
-                document.body.classList.toggle('sidebar-open', !isCollapsed);
-
-                // Ensure proper visibility on mobile
-                if (window.innerWidth <= 768) {
-                    sidebar.style.transform = isCollapsed ? "translateX(0)" : "translateX(-250px)";
+                if (sidebar.classList.contains('collapsed-sidebar')) {
+                    sidebar.classList.remove('collapsed-sidebar');
+                    document.body.classList.add('sidebar-open');
                 } else {
-                    sidebar.style.transform = isCollapsed ? "translateX(0)" : "translateX(-300px)";
+                    sidebar.classList.add('collapsed-sidebar');
+                    document.body.classList.remove('sidebar-open');
                 }
             }
 
-            menuButton.addEventListener("click", toggleSidebar);
+            menuButton.addEventListener("click", function(event) {
+                event.stopPropagation();  // Prevent immediate closing
+                toggleSidebar();
+                fetch('/toggle_sidebar')  // Streamlit session update
+                    .then(response => response.json())
+                    .then(data => console.log('Sidebar toggled:', data));
+            });
 
-            // Close sidebar when clicking outside on mobile
             document.addEventListener("click", function(event) {
                 if (!sidebar.contains(event.target) && !menuButton.contains(event.target) && window.innerWidth <= 768) {
                     sidebar.classList.add('collapsed-sidebar');
@@ -489,7 +500,7 @@ st.markdown("""
         }
     </style>
     <div class="title-container">🎯 Business Prospects Pipeline Tracker</div>
-    <div class="marquee-container">Track your business prospects in real-time   |   Data-driven insights   |   Sales pipeline optimization!!   🔥✨</div>
+    <div class="marquee-container">Track your business prospects with real-time analytics   |   Stay ahead with data-driven insights   |   Optimize your sales pipeline efficiently!!   🔥✨</div>
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="main-content"></div>', unsafe_allow_html=True)  # Push content down
