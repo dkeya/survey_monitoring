@@ -31,11 +31,11 @@ def load_data(folder_path, file_name):
 
 # --- User Input for File Path and Name ---
 st.sidebar.header("File Configuration")
-folder_path = st.sidebar.text_input("Enter folder path", r"C:\Users\dkeya\Documents\SBS\2025\Survey Monitoring Dashboard")
-file_name = st.sidebar.text_input("Enter file name", "Maize_PL_Survey_Thursday 2025.xlsx")
+# folder_path = st.sidebar.text_input("Enter folder path", r"C:\Users\dkeya\Documents\SBS\2025\Survey Monitoring Dashboard")
+# file_name = st.sidebar.text_input("Enter file name", "Maize_PL_Survey_Thursday 2025.xlsx")
 
 # --- Load Data ---
-df = load_data(folder_path, file_name)
+df = pd.read_excel("Maize_PL_Survey_Thursday 2025.xlsx")
 
 if df is not None:
     st.success("✅ File loaded successfully!")
