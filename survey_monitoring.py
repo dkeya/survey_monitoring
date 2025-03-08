@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+os.system("pip install seaborn")
 from scipy.stats import zscore
 
 # --- Streamlit App Layout ---
