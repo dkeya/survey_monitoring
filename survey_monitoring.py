@@ -9,33 +9,22 @@ from scipy.stats import zscore
 # --- Streamlit App Layout ---
 st.title("Maize Survey Monitoring Dashboard")
 
-# --- Dynamic File Loading ---
-@st.cache_data(ttl=60)  # Refreshes every 60 seconds
-def load_data(folder_path, file_name):
+# --- Load Data ---
+@st.cache_data(ttl=60)  # Cache data for 60 seconds
+def load_data(file_name):
     """
-    Loads the survey data from the specified file path.
+    Loads the survey data from the specified file.
     Caches the data to avoid reloading on every interaction.
     """
-    file_path = os.path.join(folder_path, file_name)
-
-    if not os.path.exists(file_path):
-        st.error(f"❌ File Not Found: {file_path}")
-        return None
-
     try:
-        df = pd.read_excel(file_path, sheet_name="Maize P&L Survey")
+        df = pd.read_excel(file_name, sheet_name="Maize P&L Survey")
         return df
     except Exception as e:
         st.error(f"❌ Error loading file: {e}")
         return None
 
-# --- User Input for File Path and Name ---
-st.sidebar.header("File Configuration")
-# folder_path = st.sidebar.text_input("Enter folder path", r"C:\Users\dkeya\Documents\SBS\2025\Survey Monitoring Dashboard")
-# file_name = st.sidebar.text_input("Enter file name", "Maize_PL_Survey_Thursday 2025.xlsx")
-
-# --- Load Data ---
-df = pd.read_excel("Maize_PL_Survey_Thursday 2025.xlsx")
+# Load dataset
+df = load_data("Maize_PL_Survey_Thursday 2025.xlsx")
 
 if df is not None:
     st.success("✅ File loaded successfully!")
