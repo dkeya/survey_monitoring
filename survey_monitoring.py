@@ -67,13 +67,13 @@ if df is not None:
     enumerator_column = "2B. Name of Enumerator "  # Updated to include the trailing space
     if enumerator_column in df.columns:
         enumerators = df[enumerator_column].unique()
-        selected_enumerator = st.sidebar.selectbox("Select Enumerator", ["All"] + list(enumerators))
+        selected_enumerator = st.sidebar.selectbox("Select Enumerator", ["All"] + list(enumerators), key="enumerator_select")
     else:
         st.error(f"❌ Column '{enumerator_column}' not found in the dataset. Please check the column names above.")
         selected_enumerator = "All"
 
     # Low Submission Threshold
-    low_submission_threshold = st.sidebar.number_input("Set low submission threshold", value=5)
+    low_submission_threshold = st.sidebar.number_input("Set low submission threshold", value=5, key="low_submission_threshold")
 
     # Add space
     st.sidebar.markdown("---")
@@ -82,14 +82,16 @@ if df is not None:
     st.sidebar.header("📊 Enumerator Metrics")
     enumerator_metric = st.sidebar.radio(
         "Select Metric",
-        ["Start Time", "Stop Time", "Survey Duration", "No Pattern", "Missing Data Pattern", "Outlier Pattern", "GPS Location vs Polygon/Homestead"]
+        ["Start Time", "Stop Time", "Survey Duration", "No Pattern", "Missing Data Pattern", "Outlier Pattern", "GPS Location vs Polygon/Homestead"],
+        key="enumerator_metric"  # Add a unique key
     )
 
     # --- Survey-Wide Analysis Submodules ---
     st.sidebar.header("📈 Survey-Wide Analysis")
     survey_analysis = st.sidebar.radio(
         "Select Analysis",
-        ["Outliers", "Price Range", "Acreage", "Seeding Rate", "Scale No", "Production Cost Parameters", "Seed Type", "Monocrop vs. Intercrop Ratio"]
+        ["Outliers", "Price Range", "Acreage", "Seeding Rate", "Scale No", "Production Cost Parameters", "Seed Type", "Monocrop vs. Intercrop Ratio"],
+        key="survey_analysis"  # Add a unique key
     )
 
     # --- Dynamic Content Rendering ---
@@ -184,6 +186,74 @@ if df is not None:
             st.write(df[acreage_columns].describe())
         else:
             st.warning("⚠️ One or more acreage columns not found in the dataset.")
+
+    elif survey_analysis == "Seeding Rate":
+        st.header("🌱 Seeding Rate")
+        if "5C2. What quantity of maize seeds(kgs) did you use to farm your maize?" in df.columns and \
+           "4D1. What size of land was under maize production in acres? (MAM Season)" in df.columns:
+            # Calculate seeding rate (kg/acre)
+            df["Seeding Rate (kg/acre)"] = df["5C2. What quantity of maize seeds(kgs) did you use to farm your maize?"] / df["4D1. What size of land was under maize production in acres? (MAM Season)"]
+            
+            # Display min and max seeding rate
+            min_seeding_rate = df["Seeding Rate (kg/acre)"].min()
+            max_seeding_rate = df["Seeding Rate (kg/acre)"].max()
+            st.write(f"Min Seeding Rate: {min_seeding_rate} kg/acre")
+            st.write(f"Max Seeding Rate: {max_seeding_rate} kg/acre")
+            
+            # Display summary statistics for seeding rate
+            st.subheader("Summary Statistics for Seeding Rate")
+            st.write(df["Seeding Rate (kg/acre)"].describe())
+        else:
+            st.warning("⚠️ Columns for seeding rate calculation not found in the dataset.")
+
+    elif survey_analysis == "Scale No":
+        st.header("🏡 Farm Size Distribution")
+        if "4A. What  is the total size of land you own in acres?" in df.columns:
+            # Categorize farm size into small, medium, and large
+            df["Farm Size Category"] = pd.cut(
+                df["4A. What  is the total size of land you own in acres?"],
+                bins=[0, 5, 20, float('inf')],
+                labels=["Small (0-5 acres)", "Medium (5-20 acres)", "Large (>20 acres)"]
+            )
+            
+            # Display farm size distribution
+            farm_size_counts = df["Farm Size Category"].value_counts(normalize=True) * 100
+            st.write(farm_size_counts)
+        else:
+            st.warning("⚠️ 'Farm Size' column not found in the dataset.")
+
+    elif survey_analysis == "Production Cost Parameters":
+        st.header("💸 Production Cost Parameters")
+        if "Total Production Cost (KES)" in df.columns:
+            # Display min and max production cost
+            min_cost = df["Total Production Cost (KES)"].min()
+            max_cost = df["Total Production Cost (KES)"].max()
+            st.write(f"Min Production Cost: {min_cost} KES")
+            st.write(f"Max Production Cost: {max_cost} KES")
+            
+            # Display summary statistics for production cost
+            st.subheader("Summary Statistics for Production Cost")
+            st.write(df["Total Production Cost (KES)"].describe())
+        else:
+            st.warning("⚠️ 'Total Production Cost' column not found in the dataset.")
+
+    elif survey_analysis == "Seed Type":
+        st.header("🌱 Seed Type Distribution")
+        if "4F. What is the seed category planted?" in df.columns:
+            # Display seed type distribution
+            seed_type_counts = df["4F. What is the seed category planted?"].value_counts()
+            st.write(seed_type_counts)
+        else:
+            st.warning("⚠️ 'Seed Type' column not found in the dataset.")
+
+    elif survey_analysis == "Monocrop vs. Intercrop Ratio":
+        st.header("🌾 Monocrop vs. Intercrop Ratio")
+        if "3O. What type of farming system do you use?" in df.columns:
+            # Calculate monocrop vs. intercrop ratio
+            cropping_system_counts = df["3O. What type of farming system do you use?"].value_counts(normalize=True) * 100
+            st.write(cropping_system_counts)
+        else:
+            st.warning("⚠️ 'Cropping System' column not found in the dataset.")
 
     # --- Existing Functionality (Retained) ---
     # --- Enumerators with Low Submissions ---
