@@ -215,10 +215,16 @@ if df is not None:
                 bins=[0, 5, 20, float('inf')],
                 labels=["Small (0-5 acres)", "Medium (5-20 acres)", "Large (>20 acres)"]
             )
-            
-            # Display farm size distribution
+        
+            # Calculate the percentage distribution
             farm_size_counts = df["Farm Size Category"].value_counts(normalize=True) * 100
-            st.write(farm_size_counts)
+        
+            # Convert to a DataFrame for better display
+            farm_size_df = farm_size_counts.reset_index()
+            farm_size_df.columns = ["Farm Size Category", "Percentage"]
+        
+            # Display farm size distribution
+            st.write(farm_size_df)
         else:
             st.warning("⚠️ 'Farm Size' column not found in the dataset.")
 
