@@ -261,142 +261,145 @@ if df is not None:
         else:
             st.warning("⚠️ 'Cropping System' column not found in the dataset.")
 
-    # --- Existing Functionality (Retained) ---
-    # --- Enumerators with Low Submissions ---
-    st.header("⚠️ Enumerators with Low Submissions")
-    if enumerator_column in df.columns:
-        enumerator_counts = df[enumerator_column].value_counts()
-        low_enumerators = enumerator_counts[enumerator_counts < low_submission_threshold]
+# --- Existing Functionality (Retained) ---
+# Add a separator line
+st.markdown("---")  # This creates a horizontal line
 
-        if not low_enumerators.empty:
-            st.warning(f"These enumerators have fewer than {low_submission_threshold} submissions and may need follow-up:")
-            st.write(low_enumerators)
-        else:
-            st.success("✅ No enumerators with low submissions detected.")
+# --- Enumerators with Low Submissions ---
+st.header("⚠️ Enumerators with Low Submissions")
+if enumerator_column in df.columns:
+    enumerator_counts = df[enumerator_column].value_counts()
+    low_enumerators = enumerator_counts[enumerator_counts < low_submission_threshold]
+
+    if not low_enumerators.empty:
+        st.warning(f"These enumerators have fewer than {low_submission_threshold} submissions and may need follow-up:")
+        st.write(low_enumerators)
     else:
-        st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
+        st.success("✅ No enumerators with low submissions detected.")
+else:
+    st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
 
-    # --- Submissions Over Time ---
-    st.header("📅 Daily Submissions Trend")
-    fig, ax = plt.subplots(figsize=(8, 3))
-    df.set_index("_submission_time").resample("D").size().plot(kind="line", marker="o", ax=ax)
-    plt.xlabel("Date")
-    plt.ylabel("Number of Submissions")
-    plt.title("Daily Survey Submissions")
-    plt.grid()
-    st.pyplot(fig)
+# --- Submissions Over Time ---
+st.header("📅 Daily Submissions Trend")
+fig, ax = plt.subplots(figsize=(8, 3))
+df.set_index("_submission_time").resample("D").size().plot(kind="line", marker="o", ax=ax)
+plt.xlabel("Date")
+plt.ylabel("Number of Submissions")
+plt.title("Daily Survey Submissions")
+plt.grid()
+st.pyplot(fig)
 
-    # --- Enumerator Performance ---
-    st.header("👤 Enumerator Performance")
-    if enumerator_column in df.columns:
-        st.bar_chart(df[enumerator_column].value_counts())
-    else:
-        st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
+# --- Enumerator Performance ---
+st.header("👤 Enumerator Performance")
+if enumerator_column in df.columns:
+    st.bar_chart(df[enumerator_column].value_counts())
+else:
+    st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
 
-    # --- Daily Submissions Per Enumerator ---
-    st.header("📆 Daily Submissions Per Enumerator")
-    if enumerator_column in df.columns:
-        daily_enumerator_counts = df.groupby(["Date", enumerator_column]).size().unstack(fill_value=0)
-        st.line_chart(daily_enumerator_counts)
-    else:
-        st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
+# --- Daily Submissions Per Enumerator ---
+st.header("📆 Daily Submissions Per Enumerator")
+if enumerator_column in df.columns:
+    daily_enumerator_counts = df.groupby(["Date", enumerator_column]).size().unstack(fill_value=0)
+    st.line_chart(daily_enumerator_counts)
+else:
+    st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
 
-    # --- Missing Data Analysis ---
-    st.header("⚠️ Missing Data Overview")
+# --- Missing Data Analysis ---
+st.header("⚠️ Missing Data Overview")
 
-    # Missing data by field
-    st.subheader("🔍 Missing Data by Field")
-    missing_values = df.isnull().sum() / len(df) * 100
-    critical_missing = missing_values[missing_values > 50]  # Highlight fields missing >50%
+# Missing data by field
+st.subheader("🔍 Missing Data by Field")
+missing_values = df.isnull().sum() / len(df) * 100
+critical_missing = missing_values[missing_values > 50]  # Highlight fields missing >50%
 
-    if not critical_missing.empty:
-        st.warning("🚨 Critical fields with more than 50% missing data:")
-        st.write(critical_missing)
-    else:
-        st.success("✅ No critical missing data detected.")
+if not critical_missing.empty:
+    st.warning("🚨 Critical fields with more than 50% missing data:")
+    st.write(critical_missing)
+else:
+    st.success("✅ No critical missing data detected.")
 
-    # Missing data by enumerator
-    st.subheader("🔍 Missing Data Per Enumerator")
-    if enumerator_column in df.columns:
-        missing_by_enumerator = df.groupby(enumerator_column).apply(lambda x: x.isnull().sum().sum()).sort_values(ascending=False)
-        st.bar_chart(missing_by_enumerator)
-        st.write(missing_by_enumerator)
-    else:
-        st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
+# Missing data by enumerator
+st.subheader("🔍 Missing Data Per Enumerator")
+if enumerator_column in df.columns:
+    missing_by_enumerator = df.groupby(enumerator_column).apply(lambda x: x.isnull().sum().sum()).sort_values(ascending=False)
+    st.bar_chart(missing_by_enumerator)
+    st.write(missing_by_enumerator)
+else:
+    st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
 
-    # --- Duplicate Responses ---
-    st.header("🔁 Duplicate Responses")
-    duplicate_rows = df[df.duplicated(subset=["_submission_time", enumerator_column], keep=False)]
+# --- Duplicate Responses ---
+st.header("🔁 Duplicate Responses")
+duplicate_rows = df[df.duplicated(subset=["_submission_time", enumerator_column], keep=False)]
 
-    if not duplicate_rows.empty:
-        st.warning(f"⚠️ {len(duplicate_rows)} duplicate responses detected!")
+if not duplicate_rows.empty:
+    st.warning(f"⚠️ {len(duplicate_rows)} duplicate responses detected!")
+    
+    if st.button("👀 Show Duplicate Responses"):
+        st.write(duplicate_rows[["_submission_time", enumerator_column]])
+else:
+    st.success("✅ No duplicate responses found.")
+
+# --- Outlier Detection ---
+st.header("📉 Outlier Detection")
+
+# Select only numeric columns
+numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns.tolist()
+
+if numeric_cols:
+    skipped_columns = []
+    all_outliers = pd.DataFrame()
+
+    for col in numeric_cols:
+        # Check for NaN or infinite values
+        if df[col].isnull().any() or np.isinf(df[col]).any():
+            skipped_columns.append(col)
+            continue
+
+        # Ensure there is enough data to plot
+        if len(df[col].dropna()) < 2:
+            skipped_columns.append(col)
+            continue
+
+        st.subheader(f"Outliers in {col}")
+        fig, ax = plt.subplots()
         
-        if st.button("👀 Show Duplicate Responses"):
-            st.write(duplicate_rows[["_submission_time", enumerator_column]])
-    else:
-        st.success("✅ No duplicate responses found.")
+        try:
+            sns.boxplot(data=df[col], ax=ax)
+            plt.title(f"Boxplot for {col}")
+            st.pyplot(fig)
+        except Exception as e:
+            st.error(f"❌ Error generating boxplot for {col}: {e}")
+            continue
 
-    # --- Outlier Detection ---
-    st.header("📉 Outlier Detection")
+        # Z-score based outlier detection
+        df["zscore"] = (df[col] - df[col].mean()) / df[col].std()  # Manual Z-score calculation
+        outliers = df[df["zscore"].abs() > 3]
+        if not outliers.empty:
+            st.warning(f"🚨 Outliers detected in {col}:")
+            st.write(outliers[[col, enumerator_column, "_submission_time"]])
+            all_outliers = pd.concat([all_outliers, outliers[[col, enumerator_column, "_submission_time"]]])
+        else:
+            st.success(f"✅ No outliers detected in {col}.")
 
-    # Select only numeric columns
-    numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns.tolist()
+    if skipped_columns:
+        st.warning(f"⚠️ The following columns were skipped due to NaN, infinite values, or insufficient data: {skipped_columns}")
 
-    if numeric_cols:
-        skipped_columns = []
-        all_outliers = pd.DataFrame()
+    if not all_outliers.empty:
+        st.warning("🚨 Summary of all detected outliers:")
+        st.write(all_outliers)
+else:
+    st.warning("⚠️ No numeric columns found for outlier detection.")
 
-        for col in numeric_cols:
-            # Check for NaN or infinite values
-            if df[col].isnull().any() or np.isinf(df[col]).any():
-                skipped_columns.append(col)
-                continue
+# --- Data Export ---
+st.header("📥 Export Data")
+if st.button("Export Cleaned Data"):
+    df.to_csv("cleaned_survey_data.csv", index=False)
+    st.success("✅ Data exported successfully!")
 
-            # Ensure there is enough data to plot
-            if len(df[col].dropna()) < 2:
-                skipped_columns.append(col)
-                continue
-
-            st.subheader(f"Outliers in {col}")
-            fig, ax = plt.subplots()
-            
-            try:
-                sns.boxplot(data=df[col], ax=ax)
-                plt.title(f"Boxplot for {col}")
-                st.pyplot(fig)
-            except Exception as e:
-                st.error(f"❌ Error generating boxplot for {col}: {e}")
-                continue
-
-            # Z-score based outlier detection
-            df["zscore"] = (df[col] - df[col].mean()) / df[col].std()  # Manual Z-score calculation
-            outliers = df[df["zscore"].abs() > 3]
-            if not outliers.empty:
-                st.warning(f"🚨 Outliers detected in {col}:")
-                st.write(outliers[[col, enumerator_column, "_submission_time"]])
-                all_outliers = pd.concat([all_outliers, outliers[[col, enumerator_column, "_submission_time"]]])
-            else:
-                st.success(f"✅ No outliers detected in {col}.")
-
-        if skipped_columns:
-            st.warning(f"⚠️ The following columns were skipped due to NaN, infinite values, or insufficient data: {skipped_columns}")
-
-        if not all_outliers.empty:
-            st.warning("🚨 Summary of all detected outliers:")
-            st.write(all_outliers)
-    else:
-        st.warning("⚠️ No numeric columns found for outlier detection.")
-
-    # --- Data Export ---
-    st.header("📥 Export Data")
-    if st.button("Export Cleaned Data"):
-        df.to_csv("cleaned_survey_data.csv", index=False)
-        st.success("✅ Data exported successfully!")
-
-    if st.button("Export Cleaned Data (Outliers Removed)"):
-        cleaned_df = df[df["zscore"].abs() <= 3]  # Example: Remove outliers
-        cleaned_df.to_csv("cleaned_survey_data_outliers_removed.csv", index=False)
-        st.success("✅ Cleaned data (outliers removed) exported successfully!")
+if st.button("Export Cleaned Data (Outliers Removed)"):
+    cleaned_df = df[df["zscore"].abs() <= 3]  # Example: Remove outliers
+    cleaned_df.to_csv("cleaned_survey_data_outliers_removed.csv", index=False)
+    st.success("✅ Cleaned data (outliers removed) exported successfully!")
 
 else:
     st.warning("⚠️ Please ensure the survey file is in the correct folder and refresh Streamlit.")
