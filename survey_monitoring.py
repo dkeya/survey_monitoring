@@ -26,6 +26,9 @@ def load_data(file_name):
 # Load dataset
 df = load_data("Maize_PL_Survey_Thursday 2025.xlsx")
 
+# Define the enumerator column name
+enumerator_column = "2B. Name of Enumerator "  # Updated to include the trailing space
+
 if df is not None:
     st.success("✅ File loaded successfully!")
     
@@ -60,11 +63,18 @@ if df is not None:
     else:
         st.warning("⚠️ Columns for production costs not found. Total cost cannot be calculated.")
 
+    # --- Survey Progress Overview ---
+    st.header("📌 Survey Progress Overview")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Total Submissions", len(df))
+    with col2:
+        st.metric("Unique Enumerators", df[enumerator_column].nunique())
+
     # --- Sidebar Reorganization ---
     st.sidebar.header("👤 Enumerator Filter")
     
     # Use the correct column name for enumerators (including the trailing space)
-    enumerator_column = "2B. Name of Enumerator "  # Updated to include the trailing space
     if enumerator_column in df.columns:
         enumerators = df[enumerator_column].unique()
         selected_enumerator = st.sidebar.selectbox("Select Enumerator", ["All"] + list(enumerators), key="enumerator_select")
@@ -261,83 +271,79 @@ if df is not None:
         else:
             st.warning("⚠️ 'Cropping System' column not found in the dataset.")
 
-# --- Existing Functionality (Retained) ---
-# Add a separator line
-st.markdown("---")  # This creates a horizontal line
+    # --- Enumerators with Low Submissions ---
+    st.header("⚠️ Enumerators with Low Submissions")
+    if enumerator_column in df.columns:
+        enumerator_counts = df[enumerator_column].value_counts()
+        low_enumerators = enumerator_counts[enumerator_counts < low_submission_threshold]
 
-# --- Enumerators with Low Submissions ---
-st.header("⚠️ Enumerators with Low Submissions")
-if enumerator_column in df.columns:
-    enumerator_counts = df[enumerator_column].value_counts()
-    low_enumerators = enumerator_counts[enumerator_counts < low_submission_threshold]
-
-    if not low_enumerators.empty:
-        st.warning(f"These enumerators have fewer than {low_submission_threshold} submissions and may need follow-up:")
-        st.write(low_enumerators)
+        if not low_enumerators.empty:
+            st.warning(f"These enumerators have fewer than {low_submission_threshold} submissions and may need follow-up:")
+            st.write(low_enumerators)
+        else:
+            st.success("✅ No enumerators with low submissions detected.")
     else:
-        st.success("✅ No enumerators with low submissions detected.")
-else:
-    st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
+        st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
 
-# --- Submissions Over Time ---
-st.header("📅 Daily Submissions Trend")
-fig, ax = plt.subplots(figsize=(8, 3))
-df.set_index("_submission_time").resample("D").size().plot(kind="line", marker="o", ax=ax)
-plt.xlabel("Date")
-plt.ylabel("Number of Submissions")
-plt.title("Daily Survey Submissions")
-plt.grid()
-st.pyplot(fig)
+    # --- Submissions Over Time ---
+    st.header("📅 Daily Submissions Trend")
+    fig, ax = plt.subplots(figsize=(8, 3))
+    df.set_index("_submission_time").resample("D").size().plot(kind="line", marker="o", ax=ax)
+    plt.xlabel("Date")
+    plt.ylabel("Number of Submissions")
+    plt.title("Daily Survey Submissions")
+    plt.grid()
+    st.pyplot(fig)
 
-# --- Enumerator Performance ---
-st.header("👤 Enumerator Performance")
-if enumerator_column in df.columns:
-    st.bar_chart(df[enumerator_column].value_counts())
-else:
-    st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
+    # --- Enumerator Performance ---
+    st.header("👤 Enumerator Performance")
+    if enumerator_column in df.columns:
+        st.bar_chart(df[enumerator_column].value_counts())
+    else:
+        st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
 
-# --- Daily Submissions Per Enumerator ---
-st.header("📆 Daily Submissions Per Enumerator")
-if enumerator_column in df.columns:
-    daily_enumerator_counts = df.groupby(["Date", enumerator_column]).size().unstack(fill_value=0)
-    st.line_chart(daily_enumerator_counts)
-else:
-    st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
+    # --- Daily Submissions Per Enumerator ---
+    st.header("📆 Daily Submissions Per Enumerator")
+    if enumerator_column in df.columns:
+        daily_enumerator_counts = df.groupby(["Date", enumerator_column]).size().unstack(fill_value=0)
+        st.line_chart(daily_enumerator_counts)
+    else:
+        st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
 
-# --- Missing Data Analysis ---
-st.header("⚠️ Missing Data Overview")
+    # --- Missing Data Analysis ---
+    st.header("⚠️ Missing Data Overview")
 
-# Missing data by field
-st.subheader("🔍 Missing Data by Field")
-missing_values = df.isnull().sum() / len(df) * 100
-critical_missing = missing_values[missing_values > 50]  # Highlight fields missing >50%
+    # Missing data by field
+    st.subheader("🔍 Missing Data by Field")
+    missing_values = df.isnull().sum() / len(df) * 100
+    critical_missing = missing_values[missing_values > 50]  # Highlight fields missing >50%
 
-if not critical_missing.empty:
-    st.warning("🚨 Critical fields with more than 50% missing data:")
-    st.write(critical_missing)
-else:
-    st.success("✅ No critical missing data detected.")
+    if not critical_missing.empty:
+        st.warning("🚨 Critical fields with more than 50% missing data:")
+        st.write(critical_missing)
+    else:
+        st.success("✅ No critical missing data detected.")
 
-# Missing data by enumerator
-st.subheader("🔍 Missing Data Per Enumerator")
-if enumerator_column in df.columns:
-    missing_by_enumerator = df.groupby(enumerator_column).apply(lambda x: x.isnull().sum().sum()).sort_values(ascending=False)
-    st.bar_chart(missing_by_enumerator)
-    st.write(missing_by_enumerator)
-else:
-    st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
+    # Missing data by enumerator
+    st.subheader("🔍 Missing Data Per Enumerator")
+    if enumerator_column in df.columns:
+        missing_by_enumerator = df.groupby(enumerator_column).apply(lambda x: x.isnull().sum().sum()).sort_values(ascending=False)
+        st.bar_chart(missing_by_enumerator)
+        st.write(missing_by_enumerator)
+    else:
+        st.error(f"❌ Column '{enumerator_column}' not found in the dataset.")
 
-# --- Duplicate Responses ---
-st.header("🔁 Duplicate Responses")
-duplicate_rows = df[df.duplicated(subset=["_submission_time", enumerator_column], keep=False)]
+    # --- Duplicate Responses ---
+    st.header("🔁 Duplicate Responses")
+    duplicate_rows = df[df.duplicated(subset=["_submission_time", enumerator_column], keep=False)]
 
-if not duplicate_rows.empty:
-    st.warning(f"⚠️ {len(duplicate_rows)} duplicate responses detected!")
-    
-    if st.button("👀 Show Duplicate Responses"):
-        st.write(duplicate_rows[["_submission_time", enumerator_column]])
-else:
-    st.success("✅ No duplicate responses found.")
+    if not duplicate_rows.empty:
+        st.warning(f"⚠️ {len(duplicate_rows)} duplicate responses detected!")
+        
+        if st.button("👀 Show Duplicate Responses"):
+            st.write(duplicate_rows[["_submission_time", enumerator_column]])
+    else:
+        st.success("✅ No duplicate responses found.")
 
 # --- Outlier Detection ---
 st.header("📉 Outlier Detection")
